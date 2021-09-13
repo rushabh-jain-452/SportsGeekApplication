@@ -1,19 +1,21 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useContext } from "react";
 import { StyleSheet, View, Text, ScrollView, Alert, ActivityIndicator, RefreshControl } from "react-native";
-import { Card, ListItem, Button} from 'react-native-elements';
+import { Card, ListItem, Button } from 'react-native-elements';
 import { TouchableOpacity } from "react-native-gesture-handler";
 // import { useNavigation } from '@react-navigation/native';
 import UpdateMatchMinBet from './UpdateMatchMinBet';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import formatDate from '../../helpers/formatDate';
+
+import { formatDate } from '../../helpers/dateFunctions';
 import showSweetAlert from '../../helpers/showSweetAlert';
 import { baseurl, errorMessage } from '../../config';
 import { AuthContext } from '../../../App';
 
 function UpdateMatchMinBetSchedule({ navigation }) {
-  const { loginState } = React.useContext(AuthContext);
-  const token = loginState.token;
+  const { loginState, logout } = useContext(AuthContext);
+
+  const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
   // const navigation = useNavigation();
 
@@ -30,7 +32,6 @@ function UpdateMatchMinBetSchedule({ navigation }) {
 
 
   const fetchData = () => {
-    const headers = { 'Authorization': 'Bearer ' + token }
     axios.get(baseurl + '/matches/upcoming', { headers })
       .then(response => {
         setLoading(false);
@@ -46,6 +47,9 @@ function UpdateMatchMinBetSchedule({ navigation }) {
         setLoading(false);
         setRefreshing(false);
         showSweetAlert('error', 'Network Error', errorMessage);
+        if (error.response && error.response.status === 401) {
+          logout();
+        }
       })
   }
 
@@ -59,7 +63,7 @@ function UpdateMatchMinBetSchedule({ navigation }) {
 
   return (
     <ScrollView keyboardShouldPersistTaps="handled" style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-      <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#19398A" size={40} style={{marginLeft: 20,marginTop: 10,width:100}} /></TouchableOpacity>
+      <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#19398A" size={40} style={{ marginLeft: 20, marginTop: 10, width: 100 }} /></TouchableOpacity>
       <Text style={styles.text_header}>Upcoming Matches</Text>
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
       {

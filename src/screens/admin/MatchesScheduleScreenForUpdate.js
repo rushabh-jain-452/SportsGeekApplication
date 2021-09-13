@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useContext } from "react";
 import { StyleSheet, View, Text, ScrollView, Alert, ActivityIndicator, StatusBar, RefreshControl } from "react-native";
 import { Card, ListItem, Button } from 'react-native-elements';
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -7,14 +7,15 @@ import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Spinner from 'react-native-loading-spinner-overlay';
 
-import formatDate from '../../helpers/formatDate';
+import { formatDate } from '../../helpers/dateFunctions';
 import showSweetAlert from '../../helpers/showSweetAlert';
 import { baseurl, errorMessage } from '../../config';
 import { AuthContext } from '../../../App';
 
 function MatchesScheduleScreenForUpdate({ navigation }) {
-  const { loginState } = React.useContext(AuthContext);
-  const token = loginState.token;
+  const { loginState, logout } = useContext(AuthContext);
+
+  const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
   // const navigation = useNavigation();
 
@@ -31,7 +32,6 @@ function MatchesScheduleScreenForUpdate({ navigation }) {
 
 
   const fetchData = () => {
-    const headers = { 'Authorization': 'Bearer ' + token };
     setLoading(true);
     axios.get(baseurl + '/matches', { headers })
       .then(response => {
@@ -48,6 +48,9 @@ function MatchesScheduleScreenForUpdate({ navigation }) {
         setLoading(false);
         setRefreshing(false);
         showSweetAlert('error', 'Network Error', errorMessage);
+        if (error.response && error.response.status === 401) {
+          logout();
+        }
       })
   }
 
@@ -64,7 +67,6 @@ function MatchesScheduleScreenForUpdate({ navigation }) {
 
   const deleteMatch = (id) => {
     setLoading(true);
-    const headers = { 'Authorization': 'Bearer ' + token };
     setLoading(true);
     axios.delete(baseurl + '/matches/' + id, { headers })
       .then((response) => {
@@ -80,6 +82,9 @@ function MatchesScheduleScreenForUpdate({ navigation }) {
       .catch((error) => {
         setLoading(false);
         showSweetAlert('error', 'Error', 'Failed to delete Match. Please try again...');
+        if (error.response && error.response.status === 401) {
+          logout();
+        }
       })
   }
 
@@ -103,7 +108,7 @@ function MatchesScheduleScreenForUpdate({ navigation }) {
     <ScrollView keyboardShouldPersistTaps="handled" style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <Spinner visible={loading} textContent="Loading..." animation="fade" textStyle={styles.spinnerTextStyle} />
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
-      <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#19398A" size={40} style={{marginLeft: 20,marginTop: 10,width:100}} /></TouchableOpacity>
+      <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#19398A" size={40} style={{ marginLeft: 20, marginTop: 10, width: 100 }} /></TouchableOpacity>
       <Text style={styles.text_header}>Matches Schedule</Text>
       {/* {loading == true && (<ActivityIndicator size="large" color="#19398A" />)} */}
       {

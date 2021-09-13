@@ -144,7 +144,7 @@ const ForgetPasswordScreen = () => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#FFF" size={40} style={{marginLeft: 15,marginTop: 10}} /></TouchableOpacity>
+            <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#FFF" size={40} style={{ marginLeft: 15, marginTop: 10 }} /></TouchableOpacity>
             <StatusBar backgroundColor="#1F4F99" backgroundColor='#19398A' barStyle="light-content" />
             <Spinner visible={loading} textContent="Loading..." animation="fade" textStyle={styles.spinnerTextStyle} />
             <View style={styles.header}>

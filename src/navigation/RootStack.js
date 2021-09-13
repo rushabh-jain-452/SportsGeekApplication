@@ -9,7 +9,7 @@ import ForgetPasswordScreen from '../screens/ForgetPasswordScreen';
 const Stack = createStackNavigator();
 
 const RootStack = ({ navigation }) => (
-	<Stack.Navigator initialRouteName="SplashScreen" screenOptions={{headerShown: false}}>
+	<Stack.Navigator initialRouteName="SplashScreen" screenOptions={{ headerShown: false }}>
 		<Stack.Screen name="SplashScreen" component={SplashScreen} />
 		<Stack.Screen name="SignInScreen" component={SignInScreen} />
 		<Stack.Screen name="SignUpScreen" component={SignUpScreen} />

@@ -10,5 +10,8 @@ export const errorMessage = 'Oops! Something went wrong and we can’t help you 
 
 // export const chatRefreshDelay = 10000;  // 10 seconds
 // export const chatRefreshDelay = 30000;  // 30 seconds
-export const chatRefreshDelay = 60000;  // 60 seconds
-export const chatDays = 60;  // 10 days
+// export const chatRefreshDelay = 60000;  // 60 seconds
+
+export const chatDays = 10;  // 10 days
+// export const chatDays = 30;  // 30 days
+// export const chatDays = 60;  // 60 days

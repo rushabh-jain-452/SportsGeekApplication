@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Button, StyleSheet, StatusBar, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+// import { useTheme } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Card } from 'react-native-elements';
 import axios from 'axios';
 
-import formatDate from '../helpers/formatDate';
+import * as Colors from '../config/Colors';
+import { formatDate, getNumberFromDate } from '../helpers/dateFunctions';
 import showSweetAlert from '../helpers/showSweetAlert';
 import { baseurl, errorMessage } from '../config';
 import { AuthContext } from '../../App';
@@ -14,9 +15,10 @@ import { AuthContext } from '../../App';
 const Tab = createMaterialTopTabNavigator();
 
 const UpcomingMatches = ({ navigation }) => {
-  const { loginState } = React.useContext(AuthContext);
-  const token = loginState.token;
+  const { loginState, logout } = useContext(AuthContext);
   const userId = loginState.userId;
+
+  const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
   const [data, setData] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -33,7 +35,6 @@ const UpcomingMatches = ({ navigation }) => {
   }, []);
 
   const fetchData = () => {
-    const headers = { 'Authorization': 'Bearer ' + token };
     axios.get(baseurl + '/users/' + userId + '/upcoming', { headers })
       .then((response) => {
         setLoading(false);
@@ -48,6 +49,9 @@ const UpcomingMatches = ({ navigation }) => {
         setLoading(false);
         setRefreshing(false);
         showSweetAlert('error', 'Network Error', errorMessage);
+        if (error.response && error.response.status === 401) {
+          logout();
+        }
       });
   };
 
@@ -55,35 +59,41 @@ const UpcomingMatches = ({ navigation }) => {
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
-      {/* {!data && (<Text style={styles.text_header}>Sorry, there are no upcoming matches.</Text>)} */}
-      {(!data || (data && data.length < 1)) && (<Text style={styles.text_header}>Sorry, you have not placed future bets on any upcoming matches.</Text>)}
+      {/* {!data && (<Text style={styles.heading}>Sorry, there are no upcoming matches.</Text>)} */}
+      {(!data || (data && data.length < 1)) && (<Text style={styles.heading}>You have not placed future bets on any upcoming matches.</Text>)}
       {
-        data && data.map((item, index) => (
-          <TouchableOpacity style={styles.rect} key={item.matchId} onPress={() => navigation.navigate('ContestScreen', { matchId: item.matchId })}>
-            <Text style={styles.date}>{formatDate(item.startDatetime)}</Text>
-            <View style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between' }}>
-              <View style={styles.ellipseRow}>
-                <Card.Image style={styles.ellipse} source={{ uri: item.team1Logo }} />
-                <Text style={styles.mI}>{item.team1Short}</Text>
+        data && data.map((item, index) => {
+          const n = getNumberFromDate(item.startDatetime);
+          const mystyle = n === 0 ? styles.bgColorEven : styles.bgColorOdd;
+          return (
+            <TouchableOpacity style={[styles.card, mystyle]} key={item.matchId} onPress={() => navigation.navigate('ContestScreen', { matchId: item.matchId })}>
+              <View>
+                <Text style={styles.date}>{formatDate(item.startDatetime)}</Text>
               </View>
-              <View style={styles.loremIpsumColumn}>
-                <Text style={styles.vs}>VS</Text>
+              <View style={styles.teamsContainer}>
+                <View style={styles.teamLeft}>
+                  <Card.Image style={styles.ellipseLeft} source={{ uri: item.team1Logo }} />
+                  <Text style={styles.teamNameLeft}>{item.team1Short}</Text>
+                </View>
+                <View style={styles.vsColumn}>
+                  <Text style={styles.vs}>vs</Text>
+                </View>
+                <View style={styles.teamRight}>
+                  <Text style={styles.teamNameRight}>{item.team2Short}</Text>
+                  <Card.Image style={styles.ellipseRight} source={{ uri: item.team2Logo }} />
+                </View>
               </View>
-              <View style={styles.rightteam}>
-                <Text style={styles.eng}>{item.team2Short}</Text>
-                <Card.Image style={styles.ellipse1} source={{ uri: item.team2Logo }} />
+              <View>
+                <Text style={styles.venue}>{item.venue}</Text>
               </View>
-            </View>
-            <View style={{ height: 40 }}>
-              <Text style={{ textAlign: 'center', fontSize: 16 }}>{item.venue}</Text>
-            </View>
-            <Card.Divider />
-            <View style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-              <Text style={{ textAlign: 'left', fontSize: 18, paddingLeft: 20, fontWeight: 'bold', width: '50%' }}>Bet Team:{" " + item.teamName}</Text>
-              <Text style={{ textAlign: 'right', fontSize: 18, paddingRight: 20, fontWeight: 'bold', width: '50%' }}>Bet Points:{" " + item.contestPoints}</Text>
-            </View>
-          </TouchableOpacity>
-        ))
+              <View style={styles.dividerStyle} ></View>
+              <View>
+                {/* <Text style={styles.bet}>Bet <Text style={styles.arrowStyle}>&#8594;</Text> {item.contestPoints} points on {item.teamName}</Text> */}
+                <Text style={styles.bet}>My Bet --&gt; {item.contestPoints} points on {item.teamName}</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })
       }
       <View style={{ height: 100 }}></View>
     </ScrollView>
@@ -92,8 +102,9 @@ const UpcomingMatches = ({ navigation }) => {
 
 const LiveMatches = ({ navigation }) => {
   const { loginState } = React.useContext(AuthContext);
-  const token = loginState.token;
   const userId = loginState.userId;
+
+  const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
   const [data, setData] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -112,11 +123,7 @@ const LiveMatches = ({ navigation }) => {
     // console.log("U Id : " + userId);
     setLoading(false);
     setRefreshing(false);
-    axios.get(baseurl + '/users/' + userId + '/live', {
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    })
+    axios.get(baseurl + '/users/' + userId + '/live', { headers })
       .then((response) => {
         setLoading(false);
         setRefreshing(false);
@@ -130,6 +137,9 @@ const LiveMatches = ({ navigation }) => {
         setLoading(false);
         setRefreshing(false);
         showSweetAlert('error', 'Network Error', errorMessage);
+        if (error.response && error.response.status === 401) {
+          logout();
+        }
       });
   };
 
@@ -137,34 +147,39 @@ const LiveMatches = ({ navigation }) => {
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
-      {(!data || (data && data.length < 1)) && (<Text style={styles.text_header}>Sorry, there are no live matches running now.</Text>)}
+      {(!data || (data && data.length < 1)) && (<Text style={styles.heading}>There are no live matches running now.</Text>)}
       {
-        data && data.map((item, index) => (
-          <TouchableOpacity style={styles.rect} key={item.matchId} onPress={() => navigation.navigate('UsersContestForLiveMatch', { matchId: item.matchId })}>
-            <Text style={styles.date}>{formatDate(item.startDatetime)}</Text>
-            <View style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between' }}>
-              <View style={styles.ellipseRow}>
-                <Card.Image style={styles.ellipse} source={{ uri: item.team1Logo }} />
-                <Text style={styles.mI}>{item.team1Short}</Text>
+        data && data.map((item, index) => {
+          const n = getNumberFromDate(item.startDatetime);
+          const mystyle = n === 0 ? styles.bgColorEven : styles.bgColorOdd;
+          return (
+            <TouchableOpacity style={[styles.card, mystyle]} key={item.matchId} onPress={() => navigation.navigate('LiveMatchDetailsScreen', { matchId: item.matchId })}>
+              <View>
+                <Text style={styles.date}>{formatDate(item.startDatetime)}</Text>
               </View>
-              <View style={styles.loremIpsumColumn}>
-                <Text style={styles.vs}>VS</Text>
+              <View style={styles.teamsContainer}>
+                <View style={styles.teamLeft}>
+                  <Card.Image style={styles.ellipseLeft} source={{ uri: item.team1Logo }} />
+                  <Text style={styles.teamNameLeft}>{item.team1Short}</Text>
+                </View>
+                <View style={styles.vsColumn}>
+                  <Text style={styles.vs}>vs</Text>
+                </View>
+                <View style={styles.teamRight}>
+                  <Text style={styles.teamNameRight}>{item.team2Short}</Text>
+                  <Card.Image style={styles.ellipseRight} source={{ uri: item.team2Logo }} />
+                </View>
               </View>
-              <View style={styles.rightteam}>
-                <Text style={styles.eng}>{item.team2Short}</Text>
-                <Card.Image style={styles.ellipse1} source={{ uri: item.team2Logo }} />
+              <View>
+                <Text style={styles.venue}>{item.venue}</Text>
               </View>
-            </View>
-            <View style={{ height: 40 }}>
-              <Text style={{ textAlign: 'center', fontSize: 16 }}>{item.venue}</Text>
-            </View>
-            <Card.Divider />
-            <View style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-              <Text style={{ textAlign: 'left', fontSize: 18, paddingLeft: 20, fontWeight: 'bold', width: '50%' }}>Bet Team:{" " + item.teamName}</Text>
-              <Text style={{ textAlign: 'right', fontSize: 18, paddingRight: 20, fontWeight: 'bold', width: '50%' }}>Bet Points:{" " + item.contestPoints}</Text>
-            </View>
-          </TouchableOpacity>
-        ))
+              <View style={styles.dividerStyle} ></View>
+              <View>
+                <Text style={styles.bet}>My Bet --&gt; {item.contestPoints} points on {item.teamName}</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })
       }
       <View style={{ height: 100 }}></View>
     </ScrollView>
@@ -173,8 +188,9 @@ const LiveMatches = ({ navigation }) => {
 
 const Results = ({ navigation }) => {
   const { loginState } = React.useContext(AuthContext);
-  const token = loginState.token;
   const userId = loginState.userId;
+
+  const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
   const [result, setResult] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -193,11 +209,7 @@ const Results = ({ navigation }) => {
     setLoading(false);
     setRefreshing(false);
     // console.log("User Id : " + userId);
-    axios.get(baseurl + '/users/' + userId + '/result', {
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    })
+    axios.get(baseurl + '/users/' + userId + '/result', { headers })
       .then((response) => {
         setLoading(false);
         setRefreshing(false);
@@ -212,6 +224,9 @@ const Results = ({ navigation }) => {
         setLoading(false);
         setRefreshing(false);
         showSweetAlert('error', 'Network Error', errorMessage);
+        if (error.response && error.response.status === 401) {
+          logout();
+        }
       });
   };
 
@@ -219,46 +234,56 @@ const Results = ({ navigation }) => {
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
-      {(!result || (result && result.length < 1)) && (<Text style={styles.text_header}>Sorry, there are no results.</Text>)}
+      {(!result || (result && result.length < 1)) && (<Text style={styles.heading}>There are no results for old matches.</Text>)}
       {
-        result && result.map((item, index) => (
-          <TouchableOpacity style={styles.rect} key={item.matchId} onPress={() => navigation.navigate('ResultWithUsersScreen', { matchId: item.matchId })}>
-            <Text style={styles.date}>{formatDate(item.startDatetime)}</Text>
-            <View style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
-              <View style={styles.ellipseRow}>
-                <Card.Image style={styles.ellipse} source={{ uri: item.team1Logo }} />
-                <Text style={styles.mI}>{item.team1Short}</Text>
+        result && result.map((item, index) => {
+          const n = getNumberFromDate(item.startDatetime);
+          const mystyle = n === 0 ? styles.bgColorEven : styles.bgColorOdd;
+          return (
+            <TouchableOpacity style={[styles.card, styles.resultCard, mystyle]} key={item.matchId} onPress={() => navigation.navigate('ResultWithUsersScreen', { matchId: item.matchId })}>
+              <View style={styles.winnerContainer}>
+                {item.resultStatus == 1 && item.winnerTeamName &&
+                  (<Text style={styles.winnerTeam}>Winner: {item.winnerTeamName}</Text>)
+                }
+                {item.resultStatus == 0 && (<Text style={styles.winnerTeam}>Match Draw</Text>)}
+                {item.resultStatus == 2 && (<Text style={styles.winnerTeam}>Match Cancelled</Text>)}
+                {/* Winning or Losing Points */}
+                {
+                  (item.resultStatus == 1 && item.winnerTeamName == item.teamName) &&
+                  (<Text style={[styles.points, styles.winningPoints]}>Winning Points: {item.winningPoints}</Text>)
+                }
+                {
+                  (item.resultStatus == 1 && item.winnerTeamName != item.teamName) &&
+                  (<Text style={[styles.points, styles.losingPoints]}>Losing Points: {item.contestPoints}</Text>)
+                }
               </View>
-              <View style={styles.loremIpsumColumn}>
-                <Text style={styles.vs}>VS</Text>
+              <View style={styles.dividerStyle} ></View>
+              <View>
+                <Text style={styles.date}>{formatDate(item.startDatetime)}</Text>
               </View>
-              <View style={styles.rightteam}>
-                <Text style={styles.eng}>{item.team2Short}</Text>
-                <Card.Image style={styles.ellipse1} source={{ uri: item.team2Logo }} />
+              <View style={styles.teamsContainer}>
+                <View style={styles.teamLeft}>
+                  <Card.Image style={styles.ellipseLeft} source={{ uri: item.team1Logo }} />
+                  <Text style={styles.teamNameLeft}>{item.team1Short}</Text>
+                </View>
+                <View style={styles.vsColumn}>
+                  <Text style={styles.vs}>vs</Text>
+                </View>
+                <View style={styles.teamRight}>
+                  <Text style={styles.teamNameRight}>{item.team2Short}</Text>
+                  <Card.Image style={styles.ellipseRight} source={{ uri: item.team2Logo }} />
+                </View>
               </View>
-            </View>
-            {/* <View style={{height:40}}>
-                <Text style={{textAlign: 'center',fontSize:16}}>Placed Contest : {item.teamName}</Text>
-              </View> */}
-            <Card.Divider />
-            <View style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-              <Text style={{ textAlign: 'left', fontSize: 16, paddingLeft: 10, fontWeight: 'bold' }}>Bet Team : {item.teamName}</Text>
-              <Text style={{ textAlign: 'right', fontSize: 16, paddingRight: 10, fontWeight: 'bold' }}>Bet Points : {item.contestPoints}</Text>
-            </View>
-            <View style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginTop: 10 }}>
-              {
-                item.winnerTeamName ?
-                  (<Text style={{ textAlign: 'left', fontSize: 16, paddingLeft: 10, fontWeight: 'bold' }}>Winner Team:{" " + item.winnerTeamName}</Text>) :
-                  (<Text style={{ textAlign: 'left', fontSize: 16, paddingLeft: 10, fontWeight: 'bold' }}>Match Draw/Canceled</Text>)
-              }
-              {
-                (item.winnerTeamName == null || item.winnerTeamName == item.teamName) ?
-                  (<Text style={{ textAlign: 'right', fontSize: 16, paddingRight: 10, fontWeight: 'bold' }}>Winning Points:{" " + item.winningPoints}</Text>) :
-                  (<Text style={{ textAlign: 'right', fontSize: 16, paddingRight: 10, fontWeight: 'bold' }}>Losing Points:{" " + item.contestPoints}</Text>)
-              }
-            </View>
-          </TouchableOpacity>
-        ))
+              <View>
+                <Text style={styles.venue}>{item.venue}</Text>
+              </View>
+              <View style={styles.dividerStyle} ></View>
+              <View>
+                <Text style={styles.bet}>My Bet --&gt; {item.contestPoints} points on {item.teamName}</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })
       }
       <View style={{ marginTop: 100 }}></View>
     </ScrollView>
@@ -267,13 +292,14 @@ const Results = ({ navigation }) => {
 
 const MyMatchesScreen = () => {
   return (
-    <Tab.Navigator initialRouteName="Upcoming">
+    <Tab.Navigator initialRouteName="Live">
       <Tab.Screen name="Upcoming" component={UpcomingMatches} />
       <Tab.Screen name="Live" component={LiveMatches} />
       <Tab.Screen name="Results" component={Results} />
     </Tab.Navigator>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -281,186 +307,151 @@ const styles = StyleSheet.create({
     borderColor: "#000000",
     backgroundColor: "rgba(255,255,255,1)"
   },
-  rect: {
-    width: '95%',
-    height: 200,
-    backgroundColor: "#E6E6E6",
-    borderWidth: 1,
-    borderColor: "#000000",
-    borderRadius: 10,
-    marginTop: 10,
-    marginLeft: 11,
-  },
-  ellipse: {
-    width: 61,
-    height: 61,
-    marginTop: 0,
-    borderRadius: 30,
-    marginLeft: 7
-  },
-  mI: {
-    fontFamily: "roboto-regular",
-    color: "#121212",
+  heading: {
+    color: '#000',
+    fontWeight: 'bold',
     fontSize: 20,
-    marginLeft: 11,
-    marginTop: 20,
-    fontWeight: "bold"
+    textAlign: "center",
+    paddingTop: 5
+  },
+  // cardContainer: {
+  //   width: '100%',
+  //   display: 'flex',
+  //   flexDirection: 'column',
+  // },
+  card: {
+    width: '96%',
+    height: 160,
+    borderWidth: 2,
+    borderColor: '#19398A',
+    borderRadius: 10,
+    marginTop: 8,
+    alignSelf: 'center'
+  },
+  resultCard: {
+    height: 192
+  },
+  bgColorOdd: {
+    backgroundColor: "#DFE7FD",
+  },
+  bgColorEven: {
+    backgroundColor: "#BDE0FE",
+  },
+  winnerContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 5,
+    marginBottom: 5,
+    // backgroundColor: 'red',
+  },
+  winnerTeam: {
+    textAlign: 'left',
+    fontSize: 16,
+    paddingLeft: 10,
+    fontWeight: 'bold',
+    // backgroundColor: 'yellow',
+  },
+  points: {
+    textAlign: 'right',
+    fontSize: 16,
+    paddingRight: 10,
+    fontWeight: 'bold',
+    // backgroundColor: 'green',
+  },
+  winningPoints: {
+    color: Colors.green
+  },
+  losingPoints: {
+    color: Colors.red
   },
   date: {
     fontFamily: "roboto-regular",
     color: "#121212",
     fontSize: 18,
     textAlign: "center",
-    paddingTop: 7
+    paddingTop: 4,
+    fontWeight: 'bold'
+  },
+  teamsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: 5,
+    marginBottom: 3,
+    marginLeft: 15,
+    marginRight: 15,
+  },
+  teamLeft: {
+    width: '45%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  teamRight: {
+    width: '45%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  ellipseLeft: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  ellipseRight: {
+    width: 60,
+    height: 60,
+    borderRadius: 30
+  },
+  teamNameLeft: {
+    fontFamily: "roboto-regular",
+    color: "#121212",
+    fontSize: 22,
+    marginLeft: 15,
+    fontWeight: 'bold',
+    textAlignVertical: 'center'
+  },
+  teamNameRight: {
+    fontFamily: "roboto-regular",
+    color: "#121212",
+    fontSize: 22,
+    marginRight: 15,
+    fontWeight: 'bold',
+    textAlignVertical: 'center'
+  },
+  vsColumn: {
+    width: '10%',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   vs: {
     fontFamily: "roboto-regular",
     color: "#121212",
-    // marginTop: 22,
-    // marginLeft: 33,
     textAlign: 'center',
-    fontSize: 20,
-    marginTop: 20,
+    fontSize: 22,
   },
-  time: {
-    fontFamily: "roboto-regular",
-    color: "#121212",
+  venue: {
+    textAlign: 'center',
     fontSize: 16,
-    marginTop: 18,
-    marginLeft: 13
+    paddingBottom: 5
   },
-  loremIpsumColumn: {
-    // width: 95,
-    // marginLeft: 15,
-    display: 'flex',
-    // flexDirection: 'row',
-    // alignItems: 'center',
-    // height: 150,
-    marginTop: 10,
-    // textAlign: "center",
-    // alignSelf: "center"
-    // flex: 2
-  },
-  eng: {
-    fontFamily: "roboto-regular",
-    color: "#121212",
-    fontSize: 20,
-    marginLeft: 20,
-    marginTop: 20,
-    fontWeight: "bold"
-  },
-  ellipse1: {
-    width: 61,
-    height: 61,
-    marginLeft: 18,
-    marginTop: 0,
-    borderRadius: 30
-  },
-  ellipseRow: {
-    // height: 95,
-    display: "flex",
-    flexDirection: "row",
-    marginTop: 10,
-    marginLeft: 10,
-    // alignSelf: "flex-start"
-    // flex: 4
-  },
-  rect1: {
-    width: 407,
-    height: 142,
-    backgroundColor: "#E6E6E6",
-    borderWidth: 1,
-    borderColor: "#000000",
-    borderRadius: 10,
-    marginTop: 12,
-    marginLeft: 10
-  },
-  ellipse2: {
-    width: 61,
-    height: 61,
-    marginTop: 15,
-    borderRadius: 30
-  },
-  mI3: {
-    fontFamily: "roboto-regular",
-    color: "#121212",
-    fontSize: 18,
-    marginLeft: 11,
-    marginTop: 37,
-    fontWeight: "bold"
-  },
-  loremIpsum3: {
-    fontFamily: "roboto-regular",
-    color: "#121212",
-    fontSize: 16
-  },
-  vs1: {
-    fontFamily: "roboto-regular",
-    color: "#121212",
-    marginTop: 22,
-    marginLeft: 33
-  },
-  loremIpsum4: {
-    fontFamily: "roboto-regular",
-    color: "#121212",
+  bet: {
+    textAlign: 'center',
     fontSize: 16,
-    marginTop: 18,
-    marginLeft: 19
-  },
-  loremIpsum3Column: {
-    width: 95,
-    marginLeft: 23
-  },
-  eng1: {
-    fontFamily: "roboto-regular",
-    color: "#121212",
-    fontSize: 18,
-    marginLeft: 20,
-    marginTop: 37,
-    fontWeight: "bold"
-  },
-  ellipse3: {
-    width: 61,
-    height: 61,
-    marginLeft: 18,
-    marginTop: 17,
-    borderRadius: 30
-  },
-  ellipse2Row: {
-    height: 95,
-    flexDirection: "row",
-    marginTop: 26,
-    marginLeft: 10,
-    marginRight: 10
-  },
-  iplSchedule2021: {
-    fontFamily: "roboto-regular",
-    color: "rgba(00,00,00,1)",
-    fontSize: 24,
-    textAlign: "center",
-    marginTop: -336,
-  },
-  rightteam: {
-    // flex: 4
-    display: 'flex',
-    flexDirection: "row",
-    marginTop: 10,
-    marginRight: 10,
-  },
-  container2: {
-    flex: 1,
-    justifyContent: "center"
-  },
-  horizontal: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 10
-  },
-  text_header: {
-    color: '#000',
     fontWeight: 'bold',
-    fontSize: 20,
-    textAlign: "center",
-  }
+    position: 'relative',
+    bottom: 0,
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  dividerStyle: {
+    height: 2,
+    // backgroundColor: '#000',
+    backgroundColor: '#19398A'
+  },
 });
+
 export default MyMatchesScreen;

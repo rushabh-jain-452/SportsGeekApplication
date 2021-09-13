@@ -15,7 +15,7 @@ import showSweetAlert from '../helpers/showSweetAlert';
 import { baseurl, errorMessage } from '../config';
 import { AuthContext } from '../../App';
 
-const ResultWithUsersScreen = (props) => {
+const LiveMatchDetailsScreen = (props) => {
   const { loginState, logout } = useContext(AuthContext);
   const username = loginState.username;
 
@@ -27,7 +27,6 @@ const ResultWithUsersScreen = (props) => {
 
   const [matchData, setMatchData] = useState({});
   const [data, setData] = useState([]);
-  const [winnerTeam, setWinnerTeam] = useState('');
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -53,18 +52,14 @@ const ResultWithUsersScreen = (props) => {
       .then((response) => {
         if (response.status == 200) {
           setMatchData(response.data);
+          // setMatchData([]);
           const matchData = response.data;
-          if (matchData.winnerTeamId == matchData.team1Id)
-            setWinnerTeam(matchData.team1Short);
-          else if (matchData.winnerTeamId == matchData.team2Id)
-            setWinnerTeam(matchData.team2Short);
           fetchData(matchData);
         } else {
           setMatchData([]);
         }
       })
       .catch((error) => {
-        setMatchData([]);
         showSweetAlert('error', 'Network Error', errorMessage);
         if (error.response && error.response.status === 401) {
           logout();
@@ -78,6 +73,7 @@ const ResultWithUsersScreen = (props) => {
         setLoading(false);
         setRefreshing(false);
         if (response.status == 200) {
+          // console.log(response.data);
           setData(response.data);
           const records = response.data;
           let team1points = 0, team2points = 0;
@@ -156,17 +152,10 @@ const ResultWithUsersScreen = (props) => {
           return newData;
         });
         break;
-      case 'bet':
+      case 'points':
         setData((oldData) => {
           const newData = [...oldData];
           newData.sort((a, b) => (a.contestPoints - b.contestPoints) * order);
-          return newData;
-        });
-        break;
-      case 'win':
-        setData((oldData) => {
-          const newData = [...oldData];
-          newData.sort((a, b) => (a.winningPoints - b.winningPoints) * order);
           return newData;
         });
         break;
@@ -182,14 +171,6 @@ const ResultWithUsersScreen = (props) => {
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
       <View style={[styles.card, cardStyle]}>
-        <View>
-          {matchData.resultStatus == 1 &&
-            (<Text style={styles.winnerTeam}>Winner: {winnerTeam}</Text>)
-          }
-          {matchData.resultStatus == 0 && (<Text style={styles.winnerTeam}>Match Draw</Text>)}
-          {matchData.resultStatus == 2 && (<Text style={styles.winnerTeam}>Match Cancelled</Text>)}
-        </View>
-        <View style={styles.dividerStyle} ></View>
         <View>
           <Text style={styles.date}>{formatDate(matchData.startDatetime)}</Text>
         </View>
@@ -234,15 +215,9 @@ const ResultWithUsersScreen = (props) => {
             <FontAwesome name="sort" color="#000" size={15} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => { sort('bet') }}
+            onPress={() => { sort('points') }}
             style={[styles.headingCol, styles.headingCol3]}>
-            <Text style={styles.headingColText}>Bet</Text>
-            <FontAwesome name="sort" color="#000" size={15} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => { sort('win') }}
-            style={[styles.headingCol, styles.headingCol4]}>
-            <Text style={styles.headingColText}>Win</Text>
+            <Text style={styles.headingColText}>Points</Text>
             <FontAwesome name="sort" color="#000" size={15} />
           </TouchableOpacity>
         </View>
@@ -271,8 +246,7 @@ const ResultWithUsersScreen = (props) => {
                 }
                 <Text style={[styles.cardItem, styles.name]}>{item.firstName + ' ' + item.lastName}</Text>
                 <Text style={[styles.cardItem, styles.teamShortName]}>{item.teamShortName}</Text>
-                <Text style={[styles.cardItem, styles.bet]}>{item.contestPoints}</Text>
-                <Text style={[styles.cardItem, styles.win]}>{item.winningPoints}</Text>
+                <Text style={[styles.cardItem, styles.points]}>{item.contestPoints}</Text>
               </View>
             );
           })
@@ -294,7 +268,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '96%',
-    height: 192,
+    height: 160,
     borderWidth: 2,
     borderColor: '#19398A',
     borderRadius: 10,
@@ -307,21 +281,12 @@ const styles = StyleSheet.create({
   bgColorEven: {
     backgroundColor: "#BDE0FE",
   },
-  winnerTeam: {
-    fontFamily: "roboto-regular",
-    color: "#121212",
-    fontSize: 18,
-    textAlign: "center",
-    paddingTop: 2,
-    paddingBottom: 3,
-    fontWeight: 'bold'
-  },
   date: {
     fontFamily: "roboto-regular",
     color: "#121212",
     fontSize: 18,
     textAlign: "center",
-    paddingTop: 2,
+    paddingTop: 4,
     fontWeight: 'bold'
   },
   teamsContainer: {
@@ -469,26 +434,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   headingCol1: {
-    width: '57%',
-    // backgroundColor: 'green',
+    width: '60%',
   },
   headingCol2: {
-    width: '15%',
-    // backgroundColor: 'yellow',
+    width: '20%',
   },
   headingCol3: {
-    width: '14%',
-    // backgroundColor: 'green',
-  },
-  headingCol4: {
-    width: '14%',
+    width: '20%',
     // textAlign: 'right',
     justifyContent: 'flex-end',
     paddingRight: 10,
-    // backgroundColor: 'yellow',
+    // backgroundColor: 'yellow'
   },
   headingColText: {
-    paddingRight: 5,
+    paddingRight: 8,
     fontSize: 14,
     fontWeight: 'bold',
   },
@@ -517,28 +476,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   name: {
-    width: '43%',
+    width: '53%',
     paddingLeft: 10,
-    // backgroundColor: 'yellow',
   },
   teamShortName: {
-    width: '16%',
-    textAlign: 'center',
+    width: '20%',
     fontSize: 17,
     paddingLeft: 5,
-    // backgroundColor: 'green',
   },
-  bet: {
-    textAlign: 'right',
+  points: {
+    textAlign: 'center',
     paddingRight: 8,
-    width: '13%',
-    // backgroundColor: 'yellow',
-  },
-  win: {
-    textAlign: 'right',
-    paddingRight: 8,
-    width: '13%',
-    // backgroundColor: 'green',
+    width: '15%',
   },
   bgLight: {
     backgroundColor: "#E6E6E6",
@@ -548,4 +497,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ResultWithUsersScreen;
+export default LiveMatchDetailsScreen;

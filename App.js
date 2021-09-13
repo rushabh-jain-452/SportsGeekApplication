@@ -6,38 +6,37 @@
  * @flow strict-local
  */
 
-import React, {useEffect} from 'react';
-import type {Node} from 'react';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
-import { 
-  NavigationContainer, 
+import React, { useEffect } from 'react';
+import type { Node } from 'react';
+// import { ToastAndroid } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {
+  NavigationContainer,
   DefaultTheme as NavigationDefaultTheme,
   DarkTheme as NavigationDarkTheme
 } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
-import { 
-  Provider as PaperProvider, 
+import {
+  Provider as PaperProvider,
   DefaultTheme as PaperDefaultTheme,
   DarkTheme as PaperDarkTheme
 } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
- 
+
 import RootStack from './src/navigation/RootStack';
 import HomeStack from './src/navigation/HomeStack';
 // import MainTab from './src/navigation/MainTab';
 
-// const baseurl = 'localhost:8080';
- 
 //  const Drawer = createDrawerNavigator();
-
+import showSweetAlert from './src/helpers/showSweetAlert';
+import { baseurl, errorMessage } from './src/config';
 export const AuthContext = React.createContext();
 
 const App: () => Node = () => {
-   // const [isLoading, setIsLoading] = React.useState(true);
-   // const [userToken, setUserToken] = React.useState(null); 
- 
+  // const [isLoading, setIsLoading] = React.useState(true);
+  // const [userToken, setUserToken] = React.useState(null); 
+
   const [isDarkTheme, setIsDarkTheme] = React.useState(false);
 
   const initialLoginState = {
@@ -45,7 +44,9 @@ const App: () => Node = () => {
     username: null,
     role: null,
     token: null,
-    chatMessages: []
+    chatMessages: [],
+    lastChatId: 0,
+    lastLogId: 0,
   };
 
   const CustomDefaultTheme = {
@@ -58,7 +59,7 @@ const App: () => Node = () => {
       text: '#333333'
     }
   }
-   
+
   const CustomDarkTheme = {
     ...NavigationDarkTheme,
     ...PaperDarkTheme,
@@ -69,7 +70,7 @@ const App: () => Node = () => {
       text: '#ffffff'
     }
   }
- 
+
   const theme = isDarkTheme ? CustomDarkTheme : CustomDefaultTheme;
 
   // const loginReducer = (prevState, action) => {
@@ -105,15 +106,15 @@ const App: () => Node = () => {
   //       };
   //   }
   // };
- 
+
   const loginReducer = (prevState, action) => {
-    switch( action.type ) {
-      case 'RETRIEVE_TOKEN': 
+    switch (action.type) {
+      case 'RETRIEVE_TOKEN':
         return {
           ...prevState,
           token: action.token,
         };
-      case 'LOGIN': 
+      case 'LOGIN':
         return {
           ...prevState,
           userId: action.userId,
@@ -122,7 +123,7 @@ const App: () => Node = () => {
           token: action.token,
           chatMessages: []
         };
-      case 'LOGOUT': 
+      case 'LOGOUT':
         return {
           ...prevState,
           userId: null,
@@ -131,10 +132,17 @@ const App: () => Node = () => {
           token: null,
           chatMessages: []
         };
-      case 'SET_CHAT_MESSAGES': 
+      case 'SET_CHAT_MESSAGES':
         return {
           ...prevState,
           chatMessages: action.chatMessages,
+          lastChatId: action.lastChatId ? action.lastChatId : prevState.lastChatId,
+          lastLogId: action.lastLogId ? action.lastLogId : prevState.lastLogId,
+        };
+      case 'ADD_CHAT_MESSAGES':
+        return {
+          ...prevState,
+          chatMessages: prevState.chatMessages.concat(action.newMessages),
         };
       default:
         return prevState;
@@ -143,45 +151,22 @@ const App: () => Node = () => {
 
   const [loginState, dispatch] = React.useReducer(loginReducer, initialLoginState);
 
-  const refreshChatMessages = () => {
-    console.log('Refreshing Chats...');
-  }
- 
   const authContext = React.useMemo(() => ({
-    // signIn: async(userId, foundUser, role) => {
-    //   // setUserToken('fgkj');
-    //   // setIsLoading(false);
-    //   const userToken = String(foundUser[0].userToken);
-    //   const userName = foundUser[0].username;
-      
-    //   try {
-    //     // console.log('In App.js : ' + userId.toString());
-    //     await AsyncStorage.setItem('userToken', userToken);
-    //     await AsyncStorage.setItem('role', role);
-    //     await AsyncStorage.setItem('userId', userId.toString());
-    //   } catch(e) {
-    //     console.log(e);
-    //   }
-    //   // console.log('user token: ', userToken);
-    //   dispatch({ type: 'LOGIN', id: userName, token: userToken, role: role });
-    // },
-    signIn: async(userId, username, role, token) => {
+    login: async (userId, username, role, token) => {
       try {
         // console.log('From SignIn : ' + userId + ' ' + username + ' ' + role + ' ' + token);
-        await AsyncStorage.setItem('userId', userId+'');
+        await AsyncStorage.setItem('userId', userId + '');
         await AsyncStorage.setItem('username', username);
         await AsyncStorage.setItem('role', role);
         await AsyncStorage.setItem('token', token);
-        // await AsyncStorage.setItem('role', role);
-        // await AsyncStorage.setItem('userId', userId.toString());
-      } catch(e) {
+      } catch (e) {
         console.log(e);
       }
       // console.log('Token from Signin : ', token);
       // dispatch({ type: 'LOGIN', id: userName, token: userToken, role: role });
-      dispatch({ type: 'LOGIN', userId: userId, username: username, role:role, token: token });
+      dispatch({ type: 'LOGIN', userId: userId, username: username, role: role, token: token });
     },
-    signOut: async() => {
+    logout: async () => {
       // setUserToken(null);
       // setIsLoading(false);
       try {
@@ -189,21 +174,16 @@ const App: () => Node = () => {
         await AsyncStorage.removeItem('username');
         await AsyncStorage.removeItem('role');
         await AsyncStorage.removeItem('token');
-      } catch(e) {
+      } catch (e) {
         // console.log(e);
       }
       dispatch({ type: 'LOGOUT' });
     },
-    signUp: () => {
-      // setUserToken('fgkj');
-      // setIsLoading(false);
-    },
     toggleTheme: () => {
-      setIsDarkTheme( isDarkTheme => !isDarkTheme );
+      setIsDarkTheme(isDarkTheme => !isDarkTheme);
     },
-    refreshChatMessages: refreshChatMessages
   }), []);
- 
+
   // useEffect(() => {
   //   setTimeout(async() => {
   //     // setIsLoading(false);
@@ -224,9 +204,9 @@ const App: () => Node = () => {
     const username = await AsyncStorage.getItem('username');
     const role = await AsyncStorage.getItem('role');
     const token = await AsyncStorage.getItem('token');
-    dispatch({ type: 'LOGIN', userId: userId, username: username, role:role, token: token });
+    dispatch({ type: 'LOGIN', userId: userId, username: username, role: role, token: token });
   }, []);
- 
+
   // if( loginState.isLoading ) {
   //   return(
   //     <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
@@ -234,24 +214,23 @@ const App: () => Node = () => {
   //     </View>
   //   );
   // }
- 
-   return ( 
+
+  return (
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
-        <AuthContext.Provider value={{ ...authContext, loginState: loginState }}>
+        <AuthContext.Provider value={{ ...authContext, loginState: loginState, dispatch: dispatch }}>
           <NavigationContainer theme={theme}>
-            { loginState.token !== null ? (
+            {loginState.token !== null ? (
               <HomeStack />
             )
-            :
-            <RootStack/>
-          }
+              :
+              <RootStack />
+            }
           </NavigationContainer>
         </AuthContext.Provider>
       </PaperProvider>
     </SafeAreaProvider>
-   );
- };
- 
- export default App;
- 
+  );
+};
+
+export default App;

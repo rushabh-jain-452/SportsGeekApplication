@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { TouchableOpacity, ToastAndroid } from 'react-native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Avatar } from "react-native-elements";
+import { GiftedChat } from 'react-native-gifted-chat';
 import axios from 'axios';
 
-import { baseurl } from '../config';
+import showSweetAlert from '../helpers/showSweetAlert';
+import { baseurl, errorMessage } from '../config';
 import getColor from '../helpers/getColor';
 
 import HomeScreen from '../screens/HomeScreen';
@@ -31,7 +33,7 @@ const LeaderStack = createStackNavigator();
 const MyMatchesStack = createStackNavigator();
 
 const MainTab = () => {
-  const { loginState } = React.useContext(AuthContext);
+  const { loginState, logout } = useContext(AuthContext);
   const role = loginState.role;
 
   const [badge, setBadge] = useState(0);
@@ -193,7 +195,90 @@ const FantasyStackScreen = ({ navigation }) => (
 
 const ChatStackScreen = ({ navigation }) => {
 
-  const { refreshChatMessages } = React.useContext(AuthContext);
+  const { loginState, dispatch } = React.useContext(AuthContext);
+
+  const refreshChatMessages = () => {
+    ToastAndroid.show('Fetching new messages...', ToastAndroid.SHORT);
+    // console.log('Refreshing Chats...');
+    // console.log('Token : ' + loginState.token);
+    // console.log('lastChatId : ' + loginState.lastChatId);
+    // console.log('lastLogId : ' + loginState.lastLogId);
+    if (loginState.token) {
+      const headers = { 'Authorization': 'Bearer ' + loginState.token };
+      // setLoading(true);
+      let lastChatId = loginState.lastChatId;
+      // console.log(baseurl + '/public-chat/formatted/after-id/' + lastChatId);
+      axios.get(baseurl + '/public-chat/formatted/after-id/' + lastChatId, { headers })
+        .then((response) => {
+          // setLoading(false);
+          if (response.status == 200) {
+            const newChatData = response.data;
+            if (newChatData.length > 0) {
+              // setLastId(newChatData[0]._id);
+              lastChatId = newChatData[0]._id;
+              // Required for Live AWS Database
+              // newChatData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+              // setMessages(data => [...newChatData, ...data]);
+              // setMessages(data => newChatData.concat( data.filter(value => typeof(value._id) === 'number')) );
+            }
+            // Refresh Contest Log Code here...
+            let lastLogId = loginState.lastLogId;
+            axios.get(baseurl + '/contest-log/formatted/after-id/' + lastLogId, { headers })
+              .then((response) => {
+                const newLogData = response.data;
+                if (newLogData.length > 0) {
+                  lastLogId = newLogData[0]._id.substr(1);
+                }
+                const newData = newChatData.concat(newLogData);
+                if (newData.length > 0) {
+                  // {"_id": "7dc621da-60ba-4930-a44e-48fc083c061f", "createdAt": 2021-09-12T10:50:31.302Z, "text": "hey", "user": {"_id": 16}}
+                  // Remove messages with auto-generated IDs
+                  let oldData = loginState.chatMessages;
+                  oldData.filter(value => typeof (value._id) == 'number' || value._id.length < 30);
+                  newData.sort((a, b) => {
+                    const val1 = new Date(a.createdAt);
+                    const val2 = new Date(b.createdAt);
+                    if (val1 < val2) {
+                      return 1;
+                    }
+                    if (val1 > val2) {
+                      return -1;
+                    }
+                    return 0;
+                  });
+                  dispatch({ type: 'SET_CHAT_MESSAGES', chatMessages: GiftedChat.append(oldData, newData), lastChatId: lastChatId, lastLogId: lastLogId });
+                  ToastAndroid.show(newData.length + ' new messages fetched successfully', ToastAndroid.SHORT);
+                } else {
+                  ToastAndroid.show('No new messages found', ToastAndroid.SHORT);
+                }
+              })
+              .catch((error) => {
+                console.log('inner catch');
+                // console.log(error);
+                // console.log(error.response);
+                // showSweetAlert('error', 'Network Error', errorMessage);
+                if (error.response && error.response.status === 401) {
+                  logout();
+                }
+              });
+          } else {
+            showSweetAlert('warning', 'Unable to fetch data!', 'Unable to fetch new Chats.');
+          }
+        })
+        .catch((error) => {
+          // setLoading(false);
+          // console.log(error);
+          // console.log(error.response);
+          // showSweetAlert('error', 'Network Error', errorMessage);
+          if (error.response && error.response.status === 401) {
+            logout();
+          }
+        });
+    } else {
+      console.log('Token is null');
+      // showSweetAlert('error', 'Network Error', errorMessage);
+    }
+  };
 
   return (
     <ChatStack.Navigator screenOptions={{
@@ -281,7 +366,7 @@ const UserAvatar = (props) => {
   const [shortName, setShortName] = useState('');
 
   useEffect(() => {
-    if(userId && token){
+    if (userId && token) {
       fetchUserData();
     }
   }, []);
@@ -293,33 +378,39 @@ const UserAvatar = (props) => {
       .then((response) => {
         if (response.status == 200) {
           // console.log(response.data);
-          if(response.data){
+          if (response.data) {
             setAvatarPath(response.data.profilePicture);
             setShortName(response.data.firstName.substr(0, 1) + response.data.lastName.substr(0, 1));
           }
+        }
+      })
+      .catch((error) => {
+        showSweetAlert('error', 'Network Error', errorMessage);
+        if (error.response && error.response.status === 401) {
+          logout();
         }
       });
   }
 
   return (
     avatarPath != '' ?
-    (<Avatar
-      {...props}
-      size="small"
-      rounded
-      source={{
-        uri: avatarPath
-      }}
-      containerStyle={{ marginLeft: 10 }}
-    />) :
-      shortName != '' ?
       (<Avatar
         {...props}
         size="small"
         rounded
-        title={shortName}
-        containerStyle={{ marginLeft: 10, backgroundColor: getColor(shortName) }}
+        source={{
+          uri: avatarPath
+        }}
+        containerStyle={{ marginLeft: 10 }}
       />) :
-      <Icon.Button {...props} name="person-circle" size={43} iconStyle={{ marginRight: 0 }} backgroundColor="#19398A"></Icon.Button>
+      shortName != '' ?
+        (<Avatar
+          {...props}
+          size="small"
+          rounded
+          title={shortName}
+          containerStyle={{ marginLeft: 10, backgroundColor: getColor(shortName) }}
+        />) :
+        <Icon.Button {...props} name="person-circle" size={43} iconStyle={{ marginRight: 0 }} backgroundColor="#19398A"></Icon.Button>
   );
 }

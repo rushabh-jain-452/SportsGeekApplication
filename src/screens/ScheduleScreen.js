@@ -1,20 +1,19 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useContext } from "react";
 import { StyleSheet, View, Text, ScrollView, Alert, StatusBar, ActivityIndicator, RefreshControl } from "react-native";
 import { Card, ListItem, Button, Icon } from 'react-native-elements';
 import { TouchableOpacity } from "react-native-gesture-handler";
 // import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
-import ContestScreen from "./ContestScreen";
-
+import { formatDate, calDateDiffDays, getNumberFromDate } from '../helpers/dateFunctions';
 import showSweetAlert from '../helpers/showSweetAlert';
-import formatDate from '../helpers/formatDate';
 import { baseurl, errorMessage } from '../config';
 import { AuthContext } from '../../App';
 
 const ScheduleScreen = ({ navigation }) => {
-  const { loginState } = React.useContext(AuthContext);
-  const token = loginState.token;
+  const { loginState, logout } = useContext(AuthContext);
+
+  const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
   // const navigation = useNavigation();
 
@@ -23,7 +22,7 @@ const ScheduleScreen = ({ navigation }) => {
 
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const noOfFutureBets = 5;
+  const noOfDaysFutureBets = 5;
 
   useEffect(() => {
     fetchData();
@@ -42,17 +41,17 @@ const ScheduleScreen = ({ navigation }) => {
   // }
 
   const fetchData = () => {
-    axios.get(baseurl + '/matches/upcoming', {
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    })
+    axios.get(baseurl + '/matches/upcoming', { headers })
       .then((response) => {
+        // console.log('Come in then...');
+        // console.log(response.status);
+        // console.log(response.data);
         setLoading(false);
         setRefreshing(false);
         if (response.status == 200) {
           setData(response.data);
-        } else {
+        }
+        else {
           showSweetAlert('error', 'Network Error', errorMessage);
         }
       })
@@ -60,25 +59,33 @@ const ScheduleScreen = ({ navigation }) => {
         setLoading(false);
         setRefreshing(false);
         // const response = error.message;
+        // console.log('Come in catch...');
+        // console.log(error);
+        // console.log(error.response);
         showSweetAlert('error', 'Network Error', errorMessage);
+        if (error.response && error.response.status === 401) {
+          logout();
+        }
       });
   }
 
-  const handleCardClick = (index, startDatetime, matchId) => {
+  const handleCardClick = (startDatetime, matchId) => {
     // Alert.alert(item.team1 + ' vs ' + item.team2);
     // Alert.alert(index.toString());
-    const startTimestamp = new Date(startDatetime);
+    const startDate = new Date(startDatetime);
     // console.log("Type : " + typeof(startTimestamp));
     // console.log("StartDatetime : " + startTimestamp);
-    const dt = new Date();
+    const currentDate = new Date();
     // console.log("Current Timestamp : " + dt.toLocaleString());
     // console.log(dt > startTimestamp);
-    if (index > noOfFutureBets) {
-      showSweetAlert('warning', 'Out of Schedule', 'Sorry, Bets for this match are not opened yet.');
-    }
-    else if (dt > startTimestamp) {
+    const diffDays = calDateDiffDays(new Date(), startDate);
+    // console.log(startDatetime + ' ' +  diffDays);
+    if (currentDate > startDate) {
       showSweetAlert('warning', 'Timeout', 'Sorry, Bets for this match has been closed.');
       fetchData();
+    }
+    else if (diffDays > noOfDaysFutureBets) {
+      showSweetAlert('warning', 'Out of Schedule', 'Sorry, Bets for this match are not opened yet.');
     }
     else {
       // showSweetAlert('success', 'Success', 'You can play this match.');
@@ -87,9 +94,9 @@ const ScheduleScreen = ({ navigation }) => {
     }
   }
 
-  const handlePlayerDetailClick = (teamId) => {
-    navigation.navigate('PlayerDetailofTeam', { playerTeamId: teamId });
-  }
+  // const handlePlayerDetailClick = (teamId) => {
+  //   navigation.navigate('PlayerDetailofTeam', { playerTeamId: teamId });
+  // }
 
   const onRefresh = React.useCallback(() => {
     // console.log('After refresh : ');
@@ -98,78 +105,78 @@ const ScheduleScreen = ({ navigation }) => {
     // wait(2000).then(() => setRefreshing(false));
   }, []);
 
-  let lastNumber = 0;
-  let lastDate = '';
-  const getNumberFromDate = (str) =>{
-    try{
-      // console.log(str);
-      // 2021-08-23T19:30:00.000+00:00
-      if(lastDate === ''){
-        lastDate = str;
-        const day = parseInt(str.substring(8,10));
-        lastNumber = day % 2;
-        return lastNumber;
-      }else{
-        const oldDate = lastDate.substring(0, 10);
-        const newDate = str.substring(0, 10);
-        lastDate = str;
-        if(oldDate === newDate){
-          return lastNumber;
-        }
-        else{
-          // Generate number
-          // let day = str.substring(8,10);
-          // let oldMonth = parseInt(lastDate.substring(5, 7));
-          // let newMonth = parseInt(str.substring(5,7));
-          lastNumber = (lastNumber + 1) % 2;
-          return lastNumber;
-        }
-      }
-    }
-    catch(err){
-      return 0;
-    }
-  }
+  // let lastNumber = 0;
+  // let lastDate = '';
+  // const getNumberFromDate = (str) =>{
+  //   try{
+  //     // console.log(str);
+  //     // 2021-08-23T19:30:00.000+00:00
+  //     if(lastDate === ''){
+  //       lastDate = str;
+  //       const day = parseInt(str.substring(8,10));
+  //       lastNumber = day % 2;
+  //       return lastNumber;
+  //     }else{
+  //       const oldDate = lastDate.substring(0, 10);
+  //       const newDate = str.substring(0, 10);
+  //       lastDate = str;
+  //       if(oldDate === newDate){
+  //         return lastNumber;
+  //       }
+  //       else{
+  //         // Generate number
+  //         // let day = str.substring(8,10);
+  //         // let oldMonth = parseInt(lastDate.substring(5, 7));
+  //         // let newMonth = parseInt(str.substring(5,7));
+  //         lastNumber = (lastNumber + 1) % 2;
+  //         return lastNumber;
+  //       }
+  //     }
+  //   }
+  //   catch(err){
+  //     return 0;
+  //   }
+  // };
 
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
-      {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
       <Text style={styles.heading}>Upcoming Matches</Text>
+      {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
       <View style={styles.cardContainer}>
-      {
-        data && data.map((item, index) => {
-          const n = getNumberFromDate(item.startDatetime);
-          const mystyle = n === 0 ? styles.bgColorEven : styles.bgColorOdd;
-          return (
-            <TouchableOpacity style={[styles.card, mystyle]} key={item.matchId} onPress={() => { handleCardClick(index + 1, item.startDatetime, item.matchId) }}>
-              <View>
-                <Text style={styles.date}>{formatDate(item.startDatetime)}</Text>
-              </View>
-              <View style={styles.teamsContainer}>
-                {/* <TouchableOpacity onPress={() => { handlePlayerDetailClick(item.team1Id) }}> */}
+        {
+          data && data.map((item, index) => {
+            const n = getNumberFromDate(item.startDatetime);
+            const mystyle = n === 0 ? styles.bgColorEven : styles.bgColorOdd;
+            return (
+              <TouchableOpacity style={[styles.card, mystyle]} key={item.matchId} onPress={() => { handleCardClick(item.startDatetime, item.matchId) }}>
+                <View>
+                  <Text style={styles.date}>{formatDate(item.startDatetime)}</Text>
+                </View>
+                <View style={styles.teamsContainer}>
+                  {/* <TouchableOpacity onPress={() => { handlePlayerDetailClick(item.team1Id) }}> */}
                   <View style={styles.teamLeft}>
                     <Card.Image style={styles.ellipseLeft} source={{ uri: item.team1Logo }} />
                     <Text style={styles.teamNameLeft}>{item.team1Short}</Text>
                   </View>
-                {/* </TouchableOpacity> */}
-                <View style={styles.vsColumn}>
-                  <Text style={styles.vs}>vs</Text>
-                </View>
-                {/* <TouchableOpacity onPress={() => { handlePlayerDetailClick(item.team2Id) }}> */}
+                  {/* </TouchableOpacity> */}
+                  <View style={styles.vsColumn}>
+                    <Text style={styles.vs}>vs</Text>
+                  </View>
+                  {/* <TouchableOpacity onPress={() => { handlePlayerDetailClick(item.team2Id) }}> */}
                   <View style={styles.teamRight}>
                     <Text style={styles.teamNameRight}>{item.team2Short}</Text>
                     <Card.Image style={styles.ellipseRight} source={{ uri: item.team2Logo }} />
                   </View>
-                {/* </TouchableOpacity> */}
-              </View>
-              <View>
-                <Text style={styles.venue}>{item.venue}</Text>
-              </View>
-            </TouchableOpacity>
-          );
-        })
-      }
+                  {/* </TouchableOpacity> */}
+                </View>
+                <View>
+                  <Text style={styles.venue}>{item.venue}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })
+        }
       </View>
       <View style={{ height: 15 }}></View>
     </ScrollView>
@@ -230,9 +237,9 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     fontWeight: 'bold'
   },
-  teamsContainer: { 
-    display: 'flex', 
-    flexDirection: 'row', 
+  teamsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
     // justifyContent: 'space-between',
     // backgroundColor: 'purple',
     marginTop: 5,
@@ -315,8 +322,8 @@ const styles = StyleSheet.create({
     fontSize: 22,
     // backgroundColor: 'gray'
   },
-  venue: { 
-    textAlign: 'center', 
+  venue: {
+    textAlign: 'center',
     fontSize: 16,
     position: 'relative',
     bottom: 0,
@@ -413,7 +420,7 @@ const styles = StyleSheet.create({
   //   justifyContent: "space-around",
   //   padding: 10
   // },
-  
+
 });
 
 export default ScheduleScreen;

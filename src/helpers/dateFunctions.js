@@ -1,4 +1,47 @@
-const formatDate = (dateStr) => {
+export const convertUTCDateToLocalDate = (date) => {
+  if(!date){
+    return;
+  }
+  // console.log(date);
+  var newDate = new Date(date.getTime() + (date.getTimezoneOffset() * 60 * 1000));
+
+  // var offset = date.getTimezoneOffset() / 60;
+  // var hours = date.getHours();
+
+  // newDate.setHours(hours - offset);
+
+  // return newDate;
+  return newDate.toISOString();
+};
+
+export const calDateDiffDays = (startDate, endDate) => {
+  try {
+    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+    let diffDays = (endDate.getTime() - startDate.getTime()) / oneDay;
+    // diffDays = diffDays + 1;
+    return Math.round(diffDays);
+  }
+  catch (err) {
+    return 0;
+  }
+};
+
+export const getNumberFromDate = (str) => {
+  try{
+    // console.log(str);
+    // 2021-08-23T19:30:00.000+00:00
+    const day = parseInt(str.substring(8,10));
+    const mth = parseInt(str.substring(5,7));
+    const yr = parseInt(str.substring(0,4));
+    const total = day + mth + yr;
+    return total % 2;
+  }
+  catch(err){
+    return 0;
+  }
+};
+
+export const formatDate = (dateStr) => {
   if(!dateStr){
     return '';
   }
@@ -76,6 +119,4 @@ const formatDate = (dateStr) => {
     // console.log(err);
     return '';
   }
-}
-
-export default formatDate;
+};

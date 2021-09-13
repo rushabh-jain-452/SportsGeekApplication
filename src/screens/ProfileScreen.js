@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, SafeAreaView, StyleSheet, ScrollView, RefreshControl, ActivityIndicator,TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, SafeAreaView, StyleSheet, ScrollView, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native';
 import {
   Title,
   Caption,
@@ -18,9 +18,10 @@ import * as Colors from '../config/Colors';
 import { AuthContext } from '../../App';
 
 const ProfileScreen = ({ navigation }) => {
-  const { loginState } = React.useContext(AuthContext);
-  const token = loginState.token;
+  const { loginState, logout } = useContext(AuthContext);
   const userId = parseInt(loginState.userId);
+
+  const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
   const [data, setData] = useState({});
   const [winningPoints, setWinningPoints] = useState(null);
@@ -39,7 +40,6 @@ const ProfileScreen = ({ navigation }) => {
   }, []);
 
   const displayProfile = () => {
-    const headers = { 'Authorization': 'Bearer ' + token };
     axios.get(baseurl + '/users/' + userId, { headers })
       .then((response) => {
         if (response.status == 200) {
@@ -51,11 +51,13 @@ const ProfileScreen = ({ navigation }) => {
       })
       .catch((error) => {
         showSweetAlert('error', 'Network Error', errorMessage);
+        if (error.response && error.response.status === 401) {
+          logout();
+        }
       });
   }
 
   const displayWinningAndLosingPoints = () => {
-    const headers = { 'Authorization': 'Bearer ' + token };
     axios.get(baseurl + '/users/' + userId + '/winning-losing-points', { headers })
       .then((response) => {
         setLoading(false);
@@ -71,14 +73,15 @@ const ProfileScreen = ({ navigation }) => {
         setLoading(false);
         setRefreshing(false);
         showSweetAlert('error', 'Network Error', errorMessage);
+        if (error.response && error.response.status === 401) {
+          logout();
+        }
       });
   }
 
-  const { signOut } = React.useContext(AuthContext);
-
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#19398A" size={40} style={{marginLeft: 15, marginTop: 10}} /></TouchableOpacity>
+      <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#19398A" size={40} style={{ marginLeft: 15, marginTop: 10 }} /></TouchableOpacity>
       <ScrollView keyboardShouldPersistTaps="handled" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
         <View style={styles.userInfoSection}>
@@ -140,7 +143,7 @@ const ProfileScreen = ({ navigation }) => {
           <TouchableRipple onPress={() => { navigation.navigate('UpdateProfileScreen') }}>
             <View style={styles.menuItem}>
               <Icon name="account-edit" color="#19398A" size={25} />
-              <Text style={styles.menuItemText}>Update Your Profile</Text>
+              <Text style={styles.menuItemText}>Update My Profile</Text>
             </View>
           </TouchableRipple>
           <TouchableRipple onPress={() => navigation.navigate('changePasswordScreen')}>
@@ -149,10 +152,10 @@ const ProfileScreen = ({ navigation }) => {
               <Text style={styles.menuItemText}>Change Password</Text>
             </View>
           </TouchableRipple>
-          <TouchableRipple onPress={() => { signOut() }}>
+          <TouchableRipple onPress={() => { logout() }}>
             <View style={styles.menuItem}>
               <Icon name="logout-variant" color="#19398A" size={25} />
-              <Text style={styles.menuItemText}>Signout</Text>
+              <Text style={styles.menuItemText}>Logout</Text>
             </View>
           </TouchableRipple>
         </View>

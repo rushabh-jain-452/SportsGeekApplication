@@ -1,18 +1,20 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useContext } from "react";
 import { StyleSheet, View, Text, ScrollView, Alert, ActivityIndicator, RefreshControl } from "react-native";
-import { Card, ListItem, Button} from 'react-native-elements';
+import { Card, ListItem, Button } from 'react-native-elements';
 import { TouchableOpacity } from "react-native-gesture-handler";
 // import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import formatDate from '../../helpers/formatDate';
+
+import { formatDate } from '../../helpers/dateFunctions';
 import showSweetAlert from '../../helpers/showSweetAlert';
 import { baseurl, errorMessage } from '../../config';
 import { AuthContext } from '../../../App';
 
 function UpdateMatchScheduleScreen({ navigation }) {
-  const { loginState } = React.useContext(AuthContext);
-  const token = loginState.token;
+  const { loginState, logout } = useContext(AuthContext);
+
+  const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
   // const navigation = useNavigation();
 
@@ -37,7 +39,6 @@ function UpdateMatchScheduleScreen({ navigation }) {
   // }
 
   const fetchData = () => {
-    const headers = { 'Authorization': 'Bearer ' + token }
     axios.get(baseurl + '/matches/old-matches', { headers })
       .then(response => {
         setLoading(false);
@@ -53,6 +54,9 @@ function UpdateMatchScheduleScreen({ navigation }) {
         setLoading(false);
         setRefreshing(false);
         showSweetAlert('error', 'Network Error', errorMessage);
+        if (error.response && error.response.status === 401) {
+          logout();
+        }
       })
   }
 
@@ -63,10 +67,10 @@ function UpdateMatchScheduleScreen({ navigation }) {
 
   return (
     <ScrollView keyboardShouldPersistTaps="handled" style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-      <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#19398A" size={40} style={{marginLeft: 20,marginTop: 10,width:100}} /></TouchableOpacity>
+      <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#19398A" size={40} style={{ marginLeft: 20, marginTop: 10, width: 100 }} /></TouchableOpacity>
       <Text style={styles.text_header}>Old Matches</Text>
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
-      {data.length == [] && (<Text style={{ fontSize: 20, fontWeight: 'bold', margin: 20 }}>Sorry, there are no matches pending for setting Winner...</Text>)}
+      {data.length == [] && (<Text style={{ fontSize: 20, fontWeight: 'bold', margin: 20 }}>There are no matches pending for setting Winner...</Text>)}
       {
         data.length > 0 && data.map((item, index) => (
           <TouchableOpacity style={styles.rect} key={item.matchId} onPress={() => { handleCardClick(item.matchId) }}>

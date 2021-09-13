@@ -25,7 +25,7 @@ import UpdateUserScreen from '../screens/admin/UpdateUserScreen';
 import ResultWithUsersScreen from '../screens/ResultWithUsersScreen';
 import UpdateMatchMinBet from '../screens/admin/UpdateMatchMinBet';
 import UpdateMatchMinBetSchedule from '../screens/admin/UpdateMatchMinBetSchedule';
-import UsersContestsForLiveMatch from '../screens/UsersContestsForLiveMatch';
+import LiveMatchDetailsScreen from '../screens/LiveMatchDetailsScreen';
 import UpdateActiveTournamentScreen from '../screens/admin/UpdateActiveTournamentScreen';
 import MatchesScheduleScreenForUpdate from '../screens/admin/MatchesScheduleScreenForUpdate';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -63,7 +63,7 @@ const HomeStack = ({ navigation }) => (
     <Stack.Screen name="UpdateMatchMinBetSchedule" component={UpdateMatchMinBetSchedule} />
     <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
     <Stack.Screen name="UpdateMatchMinBet" component={UpdateMatchMinBet} />
-    <Stack.Screen name="UsersContestForLiveMatch" component={UsersContestsForLiveMatch} />
+    <Stack.Screen name="LiveMatchDetailsScreen" component={LiveMatchDetailsScreen} />
     <Stack.Screen name="UpdateActiveTournamentScreen" component={UpdateActiveTournamentScreen} />
     <Stack.Screen name="MatchesScheduleScreenForUpdate" component={MatchesScheduleScreenForUpdate} />
     <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
