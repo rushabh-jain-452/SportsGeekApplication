@@ -54,6 +54,7 @@ const ChatScreen = () => {
           let lastChatId = 0;
           if (data.length > 0) {
             lastChatId = data[0]._id;
+            console.log('lastChatId: ' + lastChatId);
           }
           // Required for Live AWS Database
           // data.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
@@ -89,6 +90,7 @@ const ChatScreen = () => {
           let lastLogId = 0;
           if (logData.length > 0) {
             lastLogId = logData[0]._id.substr(1);
+            console.log('lastLogId: ' + lastLogId);
           }
           // Required for Live AWS Database
           // logData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
@@ -113,6 +115,7 @@ const ChatScreen = () => {
             }
             return 0;
           });
+          finalData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
           // console.log('Final Data after sorting : ');
           // console.log(finalData);
           finalData.push({
@@ -173,6 +176,7 @@ const ChatScreen = () => {
     if (loginState.token) {
       // setLoading(true);
       let lastChatId = loginState.lastChatId;
+      console.log(baseurl + '/public-chat/formatted/after-id/' + lastChatId);
       axios.get(baseurl + '/public-chat/formatted/after-id/' + lastChatId, { headers })
         .then((response) => {
           // setLoading(false);
@@ -197,6 +201,8 @@ const ChatScreen = () => {
                   // Remove messages with auto-generated IDs
                   let oldData = loginState.chatMessages;
                   oldData.filter(value => typeof (value._id) == 'number' || value._id.length < 30);
+                  console.log('oldData : ');
+                  console.log(oldData.length);
                   newData.sort((a, b) => {
                     const val1 = new Date(a.createdAt);
                     const val2 = new Date(b.createdAt);
@@ -208,17 +214,20 @@ const ChatScreen = () => {
                     }
                     return 0;
                   });
+                  newData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+                  // console.log('newData : ');
+                  // console.log(newData);
                   dispatch({ type: 'SET_CHAT_MESSAGES', chatMessages: GiftedChat.append(oldData, newData), lastChatId: lastChatId, lastLogId: lastLogId });
-                  if (newData.length > 0) {
+                  if (newData.length > 1) {
                     ToastAndroid.show(newData.length + ' new messages fetched successfully.', ToastAndroid.SHORT);
                   }
                 }
               })
               .catch((error) => {
                 console.log('after-id/' + lastLogId);
-                // console.log(error);
-                // console.log(error.response);
-                // showSweetAlert('error', 'Network Error', errorMessage);
+                console.log(error);
+                console.log(error.response);
+                showSweetAlert('error', 'Network Error', errorMessage);
                 if (error.response && error.response.status === 401) {
                   logout();
                 }
@@ -229,9 +238,9 @@ const ChatScreen = () => {
         })
         .catch((error) => {
           // setLoading(false);
-          // console.log(error);
-          // console.log(error.response);
-          // showSweetAlert('error', 'Network Error', errorMessage);
+          console.log(error);
+          console.log(error.response);
+          showSweetAlert('error', 'Network Error', errorMessage);
           if (error.response && error.response.status === 401) {
             logout();
           }

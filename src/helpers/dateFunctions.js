@@ -104,16 +104,24 @@ export const formatDate = (dateStr) => {
     const yr = str.substring(0,4);
     let hr = str.substring(11,13);
     const min = str.substring(14,16);
-    let ampm;
-    if(hr < 12){
-      ampm = 'AM';
-    }
-    else{
+    let ampm = 'AM';
+    if(hr >= 12){
       ampm = 'PM';
+    }
+    if(hr > 12){
       hr -= 12;
     }
+    // if(hr < 12){
+    //   ampm = 'AM';
+    // }
+    // else{
+    //   ampm = 'PM';
+    //   hr -= 12;
+    // }
       
-    return day + '-' + mth + '-' + yr + '  ' + hr + ':' + min + ' ' + ampm;
+    // return day + '-' + mth + '-' + yr + '  ' + hr + ':' + min + ' ' + ampm;
+    return day + '-' + mth + '-' + yr + '  ' + hr + ':' + min + ' ' + ampm + ' IST';
+    // return day + '-' + mth + '-' + yr + ' ' + hr + ':' + min + ' IST';
   }
   catch(err){
     // console.log(err);

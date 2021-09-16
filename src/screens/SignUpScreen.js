@@ -114,7 +114,7 @@ const SignUpScreen = ({ navigation }) => {
 			cropping: true
 		}).then((image) => {
 			if (validateImage(image)) {
-				console.log("Image path : " + image.path);
+				// console.log("Image path : " + image.path);
 				setAvatarPath(image.path);
 				setProfilePicture(image);
 			}
@@ -201,10 +201,12 @@ const SignUpScreen = ({ navigation }) => {
 						// console.log(error.response.data);
 						setLoading(false);
 						if (error.response.status == 404) {
-							showSweetAlert('warning', 'Username already exits.', 'Please change your username..!');
+							// showSweetAlert('warning', 'Username already exists.', 'Please change your username..!');
+							showSweetAlert('warning', 'Invalid Username !', 'Given username already exists for another user. Please change your username.');
 						} else if (error.response.status == 400) {
-							// showSweetAlert('warning', 'Email already exits.', 'Please change your email..!');
-							showSweetAlert('warning', 'Email already exits.', error.response.message);
+							// showSweetAlert('warning', 'Email already exists.', 'Please change your email..!');
+							// showSweetAlert('warning', 'Email already exists.', error.response.message);
+							showSweetAlert('warning', 'Invalid Email !', 'Seems that given email doesn\'t belongs to you, because user already exists with given email.');
 						} else {
 							showSweetAlert('error', 'Network Error', errorMessage);
 						}
@@ -422,7 +424,7 @@ const SignUpScreen = ({ navigation }) => {
 
 					</View>
 
-					<Text style={[styles.text_footer, { marginTop: 35 }]}>Name</Text>
+					<Text style={[styles.text_footer, { marginTop: 35 }]}>Username</Text>
 					<View style={styles.action}>
 						<FontAwesome
 							name="user-plus"
@@ -430,7 +432,7 @@ const SignUpScreen = ({ navigation }) => {
 							size={20}
 						/>
 						<TextInput
-							placeholder="Your UserName"
+							placeholder="Your Username"
 							style={styles.textInput}
 							autoCapitalize="none"
 							onChangeText={(val) => setUsername(val)}

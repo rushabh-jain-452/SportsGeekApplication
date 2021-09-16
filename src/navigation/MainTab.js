@@ -10,6 +10,7 @@ import axios from 'axios';
 import showSweetAlert from '../helpers/showSweetAlert';
 import { baseurl, errorMessage } from '../config';
 import getColor from '../helpers/getColor';
+import { convertUTCDateToLocalDate } from '../helpers/dateFunctions';
 
 import HomeScreen from '../screens/HomeScreen';
 import LeaderBoardScreen from '../screens/LeaderBoardScreen';
@@ -47,6 +48,20 @@ const MainTab = () => {
       initialRouteName="Home"
       activeColor="#fff"
     >
+      {/* {
+        role == 'Admin' &&
+        (<Tab.Screen
+          name="Admin Panel"
+          component={AdminStackScreen}
+          options={{
+            tabBarLabel: 'Admin Panel',
+            tabBarColor: '#19398A',
+            tabBarIcon: ({ color }) => (
+              <Icon name="ios-home" color={color} size={26} />
+            ),
+          }}
+        />)
+      } */}
       { (role == 'Admin') ?
         (<Tab.Screen
           name="Admin Panel"
@@ -83,14 +98,15 @@ const MainTab = () => {
         }}
       />
       <Tab.Screen
-        name="Chats"
-        component={ChatStackScreen}
+        name="My Matches"
+        component={MyMatchesStackScreen}
         options={{
-          tabBarLabel: 'Chats',
+          tabBarLabel: 'Matches',
           tabBarColor: '#19398A',
-          tabBarBadge: badge === 0 ? false : badge,
           tabBarIcon: ({ color }) => (
-            <Icon name="chatbubbles" color={color} size={26} />
+            // <Icon name="apps" color={color} size={26} />
+            // <Icon name="grid" color={color} size={26} />
+            <Icon name="stats-chart-outline" color={color} size={26} />
           ),
         }}
       />
@@ -102,17 +118,19 @@ const MainTab = () => {
           tabBarColor: '#19398A',
           tabBarIcon: ({ color }) => (
             <Icon name="trophy" color={color} size={26} />
+            // <Icon name="stats-chart-outline" color={color} size={26} />
           ),
         }}
       />
       <Tab.Screen
-        name="My Matches"
-        component={MyMatchesStackScreen}
+        name="Chat"
+        component={ChatStackScreen}
         options={{
-          tabBarLabel: 'Matches',
+          tabBarLabel: 'Chat',
           tabBarColor: '#19398A',
+          tabBarBadge: badge === 0 ? false : badge,
           tabBarIcon: ({ color }) => (
-            <Icon name="stats-chart-outline" color={color} size={26} />
+            <Icon name="chatbubbles" color={color} size={26} />
           ),
         }}
       />
@@ -207,7 +225,8 @@ const ChatStackScreen = ({ navigation }) => {
       const headers = { 'Authorization': 'Bearer ' + loginState.token };
       // setLoading(true);
       let lastChatId = loginState.lastChatId;
-      // console.log(baseurl + '/public-chat/formatted/after-id/' + lastChatId);
+      console.log(baseurl + '/public-chat/formatted/after-id/' + lastChatId);
+      console.log(loginState.lastLogId);
       axios.get(baseurl + '/public-chat/formatted/after-id/' + lastChatId, { headers })
         .then((response) => {
           // setLoading(false);
@@ -223,6 +242,7 @@ const ChatStackScreen = ({ navigation }) => {
             }
             // Refresh Contest Log Code here...
             let lastLogId = loginState.lastLogId;
+            console.log(lastLogId);
             axios.get(baseurl + '/contest-log/formatted/after-id/' + lastLogId, { headers })
               .then((response) => {
                 const newLogData = response.data;
@@ -235,6 +255,8 @@ const ChatStackScreen = ({ navigation }) => {
                   // Remove messages with auto-generated IDs
                   let oldData = loginState.chatMessages;
                   oldData.filter(value => typeof (value._id) == 'number' || value._id.length < 30);
+                  console.log('oldData : ');
+                  console.log(oldData.length);
                   newData.sort((a, b) => {
                     const val1 = new Date(a.createdAt);
                     const val2 = new Date(b.createdAt);
@@ -246,6 +268,9 @@ const ChatStackScreen = ({ navigation }) => {
                     }
                     return 0;
                   });
+                  newData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+                  console.log('newData : ');
+                  console.log(newData);
                   dispatch({ type: 'SET_CHAT_MESSAGES', chatMessages: GiftedChat.append(oldData, newData), lastChatId: lastChatId, lastLogId: lastLogId });
                   ToastAndroid.show(newData.length + ' new messages fetched successfully', ToastAndroid.SHORT);
                 } else {
@@ -253,23 +278,25 @@ const ChatStackScreen = ({ navigation }) => {
                 }
               })
               .catch((error) => {
-                console.log('inner catch');
-                // console.log(error);
-                // console.log(error.response);
-                // showSweetAlert('error', 'Network Error', errorMessage);
+                // console.log('inner catch');
+                console.log('Inner Error');
+                console.log(error);
+                console.log(error.response);
+                showSweetAlert('error', 'Network Error', errorMessage);
                 if (error.response && error.response.status === 401) {
                   logout();
                 }
               });
           } else {
-            showSweetAlert('warning', 'Unable to fetch data!', 'Unable to fetch new Chats.');
+            showSweetAlert('warning', 'Unable to fetch data!', 'Unable to fetch new messages.');
           }
         })
         .catch((error) => {
           // setLoading(false);
-          // console.log(error);
-          // console.log(error.response);
-          // showSweetAlert('error', 'Network Error', errorMessage);
+          console.log('Outer Error');
+          console.log(error);
+          console.log(error.response);
+          showSweetAlert('error', 'Network Error', errorMessage);
           if (error.response && error.response.status === 401) {
             logout();
           }
@@ -291,7 +318,7 @@ const ChatStackScreen = ({ navigation }) => {
       }
     }}>
       <ChatStack.Screen name="Chat" component={ChatScreen} options={{
-        title: 'Chats',
+        title: 'Chat',
         headerLeft: () => (
           <UserAvatar onPress={() => navigation.navigate('ProfileScreen')} />
         ),

@@ -13,6 +13,7 @@ import { formatDate, getNumberFromDate } from '../helpers/dateFunctions';
 import getColor from '../helpers/getColor';
 import showSweetAlert from '../helpers/showSweetAlert';
 import { baseurl, errorMessage } from '../config';
+import * as Colors from '../config/Colors';
 import { AuthContext } from '../../App';
 
 const LiveMatchDetailsScreen = (props) => {
@@ -25,8 +26,8 @@ const LiveMatchDetailsScreen = (props) => {
 
   const navigation = useNavigation();
 
-  const [matchData, setMatchData] = useState({});
-  const [data, setData] = useState([]);
+  const [matchData, setMatchData] = useState(null);
+  const [data, setData] = useState(null);
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -93,6 +94,7 @@ const LiveMatchDetailsScreen = (props) => {
           setTeam2NoOfBets(team2bets);
         } else {
           console.log(error);
+          setData([]);
           showSweetAlert('error', 'Network Error', errorMessage);
         }
       })
@@ -162,7 +164,7 @@ const LiveMatchDetailsScreen = (props) => {
     }
   };
 
-  const n = getNumberFromDate(matchData.startDatetime);
+  const n = matchData ? getNumberFromDate(matchData.startDatetime) : 0;
   const cardStyle = n === 0 ? styles.bgColorEven : styles.bgColorOdd;
 
   return (
@@ -170,35 +172,38 @@ const LiveMatchDetailsScreen = (props) => {
       <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#19398A" size={40} style={{ marginLeft: 20, marginTop: 10, width: 100 }} /></TouchableOpacity>
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
-      <View style={[styles.card, cardStyle]}>
-        <View>
-          <Text style={styles.date}>{formatDate(matchData.startDatetime)}</Text>
-        </View>
-        <View style={styles.teamsContainer}>
-          <View style={styles.teamLeft}>
-            <Card.Image style={styles.ellipseLeft} source={{ uri: matchData.team1Logo }} />
-            <Text style={styles.teamNameLeft}>{matchData.team1Short}</Text>
+      {
+        matchData &&
+        <View style={[styles.card, cardStyle]}>
+          <View>
+            <Text style={styles.date}>{formatDate(matchData.startDatetime)}</Text>
           </View>
-          <View style={styles.vsColumn}>
-            <Text style={styles.vs}>vs</Text>
+          <View style={styles.teamsContainer}>
+            <View style={styles.teamLeft}>
+              <Card.Image style={styles.ellipseLeft} source={{ uri: matchData.team1Logo }} />
+              <Text style={styles.teamNameLeft}>{matchData.team1Short}</Text>
+            </View>
+            <View style={styles.vsColumn}>
+              <Text style={styles.vs}>vs</Text>
+            </View>
+            <View style={styles.teamRight}>
+              <Text style={styles.teamNameRight}>{matchData.team2Short}</Text>
+              <Card.Image style={styles.ellipseRight} source={{ uri: matchData.team2Logo }} />
+            </View>
           </View>
-          <View style={styles.teamRight}>
-            <Text style={styles.teamNameRight}>{matchData.team2Short}</Text>
-            <Card.Image style={styles.ellipseRight} source={{ uri: matchData.team2Logo }} />
-          </View>
-        </View>
-        <View>
+          {/* <View>
           <Text style={styles.venue}>{matchData.venue}</Text>
+        </View> */}
+          <View style={styles.dividerStyle} ></View>
+          <View style={styles.pointsContainer}>
+            <Text style={[styles.pointsStyle, styles.team1points]}>{team1BetPoints} ({team1NoOfBets} {team1NoOfBets > 1 ? 'Bets' : 'Bet'})</Text>
+            <Text style={[styles.pointsStyle, styles.team2points]}>{team2BetPoints} ({team2NoOfBets} {team2NoOfBets > 1 ? 'Bets' : 'Bet'})</Text>
+          </View>
         </View>
-        <View style={styles.dividerStyle} ></View>
-        <View style={styles.pointsContainer}>
-          <Text style={[styles.pointsStyle, styles.team1points]}>{team1BetPoints} ({team1NoOfBets} {team1NoOfBets > 1 ? 'bets' : 'bet'})</Text>
-          <Text style={[styles.pointsStyle, styles.team2points]}>{team2BetPoints} ({team2NoOfBets} {team2NoOfBets > 1 ? 'bets' : 'bet'})</Text>
-        </View>
-      </View>
+      }
       {/* End of Card */}
       <View style={styles.boxContainer}>
-        <Text style={styles.heading}>Bets for this Match {data.length > 0 && <>({data.length} {data.length > 1 ? 'bets' : 'bet'})</>}</Text>
+        <Text style={styles.heading}>Bets for this Match {data && data.length > 0 && <>({data.length} {data.length > 1 ? 'Bets' : 'Bet'})</>}</Text>
       </View>
       <View style={styles.listContainer}>
         <View style={styles.headingRow}>
@@ -221,7 +226,7 @@ const LiveMatchDetailsScreen = (props) => {
             <FontAwesome name="sort" color="#000" size={15} />
           </TouchableOpacity>
         </View>
-        {data.length == 0 && (<Text style={styles.msgStyle}>No users had placed bet on this match.</Text>)}
+        {data && data.length == 0 && (<Text style={styles.msgStyle}>No users had placed bet on this match.</Text>)}
         {
           data && data.length > 0 && data.map((item, index) => {
             const mystyle = item.username == username ? styles.bgDark : styles.bgLight;
@@ -268,7 +273,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '96%',
-    height: 160,
+    height: 138,
     borderWidth: 2,
     borderColor: '#19398A',
     borderRadius: 10,
@@ -276,10 +281,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   bgColorOdd: {
-    backgroundColor: "#DFE7FD",
+    backgroundColor: Colors.odd,
   },
   bgColorEven: {
-    backgroundColor: "#BDE0FE",
+    backgroundColor: Colors.even,
   },
   date: {
     fontFamily: "roboto-regular",
@@ -293,7 +298,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     marginTop: 5,
-    marginBottom: 3,
+    marginBottom: 8,
     marginLeft: 15,
     marginRight: 15,
   },

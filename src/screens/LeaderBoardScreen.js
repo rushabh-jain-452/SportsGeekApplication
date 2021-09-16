@@ -438,16 +438,21 @@ const styles = StyleSheet.create({
     //    textAlign: 'center'
   },
   rank: {
+    // width: '10%',
     width: 40,
-    textAlign: 'center'
+    textAlign: 'center',
+    // backgroundColor: 'yellow',
   },
   name: {
-    width: '65%',
+    width: '62%',
     fontSize: 17,
-    paddingLeft: 7
+    paddingLeft: 7,
+    // backgroundColor: 'green',
   },
   points: {
+    width: '18%',
     textAlign: 'right',
-    paddingRight: 8
+    paddingRight: 10,
+    // backgroundColor: 'yellow',
   },
 });

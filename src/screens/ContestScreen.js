@@ -256,8 +256,7 @@ const ContestScreen = (props) => {
 						userId: userId,
 						matchId: matchId,
 						teamId: selectedTeamId,
-						contestPoints: parseInt(points),
-						winningPoints: 0
+						contestPoints: parseInt(points)
 					};
 					// console.log(requestData);
 					axios.post(baseurl + '/contest', requestData, { headers })
@@ -282,10 +281,10 @@ const ContestScreen = (props) => {
 						})
 						.catch((error) => {
 							setWaiting(false);
-							// console.log(error);
-							// console.log(error.response);
-							// console.log(error.response.data);
-							// console.log(error.response.status);
+							console.log(error);
+							console.log(error.response);
+							console.log(error.response.data);
+							console.log(error.response.status);
 							if (error.response && error.response.status === 403) {
 								// showSweetAlert('error', 'Timeout', 'Match has started');
 								showSweetAlert('error', 'Timeout', error.response.data.message);
@@ -311,8 +310,7 @@ const ContestScreen = (props) => {
 						userId: userId,
 						matchId: matchId,
 						teamId: selectedTeamId,
-						contestPoints: parseInt(points),
-						winningPoints: 0
+						contestPoints: parseInt(points)
 					};
 					// console.log(requestData);
 					axios.put(baseurl + '/contest/' + contestId, requestData, { headers })
@@ -335,7 +333,8 @@ const ContestScreen = (props) => {
 							}
 						})
 						.catch((error) => {
-							// console.log(error);
+							console.log(error);
+							console.log(error.response);
 							setWaiting(false);
 							if (error.response && error.response.status === 403) {
 								// showSweetAlert('error', 'Timeout', 'Match has started');
@@ -517,7 +516,7 @@ const ContestScreen = (props) => {
 						</TouchableOpacity>
 					</View>
 					<View style={styles.boxContainer}>
-						<Text style={styles.heading}>Bets for this Match {data.length > 0 && <>({data.length} {data.length > 1 ? 'bets' : 'bet'})</>}</Text>
+						<Text style={styles.heading}>Bets for this Match {data.length > 0 && <>({data.length} {data.length > 1 ? 'Bets' : 'Bet'})</>}</Text>
 					</View>
 					<View style={styles.listContainer}>
 						<View style={styles.headingRow}>

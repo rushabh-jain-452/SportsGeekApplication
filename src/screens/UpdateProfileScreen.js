@@ -18,9 +18,11 @@ import Feather from 'react-native-vector-icons/Feather';
 import ImagePicker from 'react-native-image-crop-picker';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { Avatar } from "react-native-elements";
-import showSweetAlert from '../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../config';
 import axios from 'axios';
+
+import showSweetAlert from '../helpers/showSweetAlert';
+import getColor from '../helpers/getColor';
+import { baseurl, errorMessage } from '../config';
 import { AuthContext } from '../../App';
 
 const UpdateProfileScreen = ({ navigation }) => {
@@ -231,7 +233,7 @@ const UpdateProfileScreen = ({ navigation }) => {
 									rounded
 									title={shortName}
 									activeOpacity={0.7}
-									containerStyle={{ color: 'red', backgroundColor: '#adadad', marginTop: 10 }}
+									containerStyle={{ color: 'red', backgroundColor: getColor(shortName), marginTop: 10 }}
 									onPress={() => { photoSelectHandler() }}
 								/>)
 						}

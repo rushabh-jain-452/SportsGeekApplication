@@ -61,6 +61,7 @@ const UpdateMatchResultScreen = (props) => {
 				setLoading(false);
 				if (response.status == 200) {
 					setData(response.data);
+					// console.log(response.data);
 				}
 				else {
 					showSweetAlert('error', 'Network Error', errorMessage);
@@ -112,10 +113,25 @@ const UpdateMatchResultScreen = (props) => {
 		}
 	}
 
-	const getConfirmation = () =>
+	const getConfirmation = () => {
+		if (winnerTeamId == -2) {
+			showSweetAlert('warning', 'Invalid Selection', "Please select any one to update the match result.");
+			return;
+		}
+		let str = 'unknown';
+		if (winnerTeamId == 0)
+			str = 'Draw';
+		else if (winnerTeamId == -1)
+			str = 'Cancelled';
+		else{
+			if(winnerTeamId == data.team1Id)
+				str = data.team1Short;
+			else if(winnerTeamId == data.team2Id)
+				str = data.team2Short;
+		}
 		Alert.alert(
 			"Match Result Update",
-			"Do you really want to update the match result ?",
+			`Do you really want to set the match result to "${str}" ?`,
 			[
 				{
 					text: "Cancel",
@@ -128,6 +144,7 @@ const UpdateMatchResultScreen = (props) => {
 				}
 			]
 		);
+	}
 
 	return (
 		<ScrollView keyboardShouldPersistTaps="handled" style={styles.container}>
@@ -136,7 +153,8 @@ const UpdateMatchResultScreen = (props) => {
 			<View style={styles.container}>
 				<TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#FFF" size={40} style={{ marginLeft: 15, marginTop: 10 }} /></TouchableOpacity>
 				<View style={styles.header}>
-					<Text style={styles.text_header}>Update Match Result</Text>
+					{/* <Text style={styles.text_header}>Update Match Result</Text> */}
+					<Text style={styles.text_header}>Set Match Result</Text>
 				</View>
 				<Animatable.View
 					animation="fadeInUpBig"
@@ -202,7 +220,7 @@ const UpdateMatchResultScreen = (props) => {
 						>
 							<Text style={[styles.textSign, {
 								color: '#19398A'
-							}]}>Update Match Result</Text>
+							}]}>Set Match Result</Text>
 						</TouchableOpacity>
 					</View>
 				</Animatable.View>

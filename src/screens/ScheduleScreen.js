@@ -8,6 +8,7 @@ import axios from 'axios';
 import { formatDate, calDateDiffDays, getNumberFromDate } from '../helpers/dateFunctions';
 import showSweetAlert from '../helpers/showSweetAlert';
 import { baseurl, errorMessage } from '../config';
+import * as Colors from '../config/Colors';
 import { AuthContext } from '../../App';
 
 const ScheduleScreen = ({ navigation }) => {
@@ -49,7 +50,9 @@ const ScheduleScreen = ({ navigation }) => {
         setLoading(false);
         setRefreshing(false);
         if (response.status == 200) {
-          setData(response.data);
+          const data = response.data;
+          const filterData = data.filter((item) => item.winnerTeamId == 0 && item.resultStatus == 0);
+          setData(filterData);
         }
         else {
           showSweetAlert('error', 'Network Error', errorMessage);
@@ -60,8 +63,8 @@ const ScheduleScreen = ({ navigation }) => {
         setRefreshing(false);
         // const response = error.message;
         // console.log('Come in catch...');
-        // console.log(error);
-        // console.log(error.response);
+        console.log(error);
+        console.log(error.response);
         showSweetAlert('error', 'Network Error', errorMessage);
         if (error.response && error.response.status === 401) {
           logout();
@@ -141,7 +144,7 @@ const ScheduleScreen = ({ navigation }) => {
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
-      <Text style={styles.heading}>Upcoming Matches</Text>
+      <Text style={styles.heading}>{data.length < 1 && 'No '}Upcoming Matches</Text>
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
       <View style={styles.cardContainer}>
         {
@@ -222,12 +225,14 @@ const styles = StyleSheet.create({
     // backgroundColor: "#BCD4E6",
     // backgroundColor: "#99C1DE",
     // backgroundColor: "#CAF0F8", // good
-    backgroundColor: "#DFE7FD",
+    // backgroundColor: "#DFE7FD",
+    backgroundColor: Colors.odd,
   },
   bgColorEven: {
     // backgroundColor: "#E8E8E4",
     // backgroundColor: "#D8E2DC",
-    backgroundColor: "#BDE0FE",
+    // backgroundColor: "#BDE0FE",
+    backgroundColor: Colors.even,
   },
   date: {
     fontFamily: "roboto-regular",

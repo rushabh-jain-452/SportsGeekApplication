@@ -68,7 +68,8 @@ function UpdateMatchScheduleScreen({ navigation }) {
   return (
     <ScrollView keyboardShouldPersistTaps="handled" style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#19398A" size={40} style={{ marginLeft: 20, marginTop: 10, width: 100 }} /></TouchableOpacity>
-      <Text style={styles.text_header}>Old Matches</Text>
+      {/* <Text style={styles.text_header}>Old Matches</Text> */}
+      <Text style={styles.text_header}>Select Match for setting Result</Text>
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
       {data.length == [] && (<Text style={{ fontSize: 20, fontWeight: 'bold', margin: 20 }}>There are no matches pending for setting Winner...</Text>)}
       {

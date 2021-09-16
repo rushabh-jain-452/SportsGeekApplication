@@ -27,6 +27,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import axios from 'axios';
 
 import showSweetAlert from '../../helpers/showSweetAlert';
+import { formatDate } from '../../helpers/dateFunctions';
 import { baseurl, errorMessage } from '../../config';
 import { AuthContext } from '../../../App';
 
@@ -142,13 +143,13 @@ const RemovePublicChatScreen = ({ navigation }) => {
 
 	const renderHiddenItem = (data, rowMap) => (
 		<View style={styles.rowBack}>
-			<Text>Left</Text>
-			<TouchableOpacity
+			{/* <Text>Left</Text> */}
+			{/* <TouchableOpacity
 				style={[styles.backRightBtn, styles.backRightBtnLeft]}
 				onPress={() => closeRow(rowMap, data.item.key)}
 			>
 				<Text style={styles.backTextWhite}>Close</Text>
-			</TouchableOpacity>
+			</TouchableOpacity> */}
 			<TouchableOpacity
 				style={[styles.backRightBtn, styles.backRightBtnRight]}
 				onPress={() => deleteRow(rowMap, data.item)}
@@ -181,7 +182,7 @@ const RemovePublicChatScreen = ({ navigation }) => {
 		return (
 			<View style={styles.rowContainer}>
 				<Text style={styles.txtMsg}>{data.item.message}</Text>
-				<Text style={styles.txtName}>~ {data.item.firstName + ' ' + data.item.lastName} ({data.item.chatTimestamp})</Text>
+				<Text style={styles.txtName}>~ {data.item.firstName + ' ' + data.item.lastName} ({formatDate(data.item.chatTimestamp)})</Text>
 			</View>
 		);
 	};

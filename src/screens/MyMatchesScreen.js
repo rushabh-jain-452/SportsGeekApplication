@@ -20,7 +20,7 @@ const UpcomingMatches = ({ navigation }) => {
 
   const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -35,6 +35,7 @@ const UpcomingMatches = ({ navigation }) => {
   }, []);
 
   const fetchData = () => {
+    // setLoading(true);
     axios.get(baseurl + '/users/' + userId + '/upcoming', { headers })
       .then((response) => {
         setLoading(false);
@@ -42,6 +43,7 @@ const UpcomingMatches = ({ navigation }) => {
         if (response.status == 200) {
           setData(response.data);
         } else {
+          setData([]);
           showSweetAlert('error', 'Network Error', errorMessage);
         }
       })
@@ -60,7 +62,7 @@ const UpcomingMatches = ({ navigation }) => {
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
       {/* {!data && (<Text style={styles.heading}>Sorry, there are no upcoming matches.</Text>)} */}
-      {(!data || (data && data.length < 1)) && (<Text style={styles.heading}>You have not placed future bets on any upcoming matches.</Text>)}
+      {(data && data.length < 1) && (<Text style={styles.heading}>You have not placed future bets on any upcoming matches.</Text>)}
       {
         data && data.map((item, index) => {
           const n = getNumberFromDate(item.startDatetime);
@@ -106,7 +108,7 @@ const LiveMatches = ({ navigation }) => {
 
   const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -121,8 +123,7 @@ const LiveMatches = ({ navigation }) => {
 
   const fetchData = () => {
     // console.log("U Id : " + userId);
-    setLoading(false);
-    setRefreshing(false);
+    // setLoading(true);
     axios.get(baseurl + '/users/' + userId + '/live', { headers })
       .then((response) => {
         setLoading(false);
@@ -130,6 +131,7 @@ const LiveMatches = ({ navigation }) => {
         if (response.status == 200) {
           setData(response.data);
         } else {
+          setData([]);
           showSweetAlert('error', 'Network Error', errorMessage);
         }
       })
@@ -147,7 +149,7 @@ const LiveMatches = ({ navigation }) => {
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
-      {(!data || (data && data.length < 1)) && (<Text style={styles.heading}>There are no live matches running now.</Text>)}
+      {(data && data.length < 1) && (<Text style={styles.heading}>There are no live matches going now.</Text>)}
       {
         data && data.map((item, index) => {
           const n = getNumberFromDate(item.startDatetime);
@@ -192,7 +194,7 @@ const Results = ({ navigation }) => {
 
   const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
-  const [result, setResult] = useState([]);
+  const [data, setData] = useState(null);
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -206,16 +208,16 @@ const Results = ({ navigation }) => {
   }, []);
 
   const fetchResultData = () => {
-    setLoading(false);
-    setRefreshing(false);
+    // setLoading(true);
     // console.log("User Id : " + userId);
     axios.get(baseurl + '/users/' + userId + '/result', { headers })
       .then((response) => {
         setLoading(false);
         setRefreshing(false);
         if (response.status == 200) {
-          setResult(response.data);
+          setData(response.data);
         } else {
+          setData([]);
           showSweetAlert('error', 'Network Error', errorMessage);
         }
       })
@@ -234,9 +236,9 @@ const Results = ({ navigation }) => {
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
-      {(!result || (result && result.length < 1)) && (<Text style={styles.heading}>There are no results for old matches.</Text>)}
+      {(data && data.length < 1) && (<Text style={styles.heading}>There are no results for old matches.</Text>)}
       {
-        result && result.map((item, index) => {
+        data && data.map((item, index) => {
           const n = getNumberFromDate(item.startDatetime);
           const mystyle = n === 0 ? styles.bgColorEven : styles.bgColorOdd;
           return (
@@ -332,10 +334,12 @@ const styles = StyleSheet.create({
     height: 192
   },
   bgColorOdd: {
-    backgroundColor: "#DFE7FD",
+    // backgroundColor: "#DFE7FD",
+    backgroundColor: Colors.odd,
   },
   bgColorEven: {
-    backgroundColor: "#BDE0FE",
+    // backgroundColor: "#BDE0FE",
+    backgroundColor: Colors.even,
   },
   winnerContainer: {
     display: 'flex',
