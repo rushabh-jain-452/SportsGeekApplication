@@ -55,8 +55,8 @@ const LeaderBoard = (props) => {
         }
       })
       .catch((error) => {
-        // setLoading(false);
-        // setRefreshing(false);
+        setLoading(false);
+        setRefreshing(false);
         showSweetAlert('error', 'Network Error', errorMessage);
         if (error.response && error.response.status === 401) {
           logout();

@@ -225,8 +225,8 @@ const ChatStackScreen = ({ navigation }) => {
       const headers = { 'Authorization': 'Bearer ' + loginState.token };
       // setLoading(true);
       let lastChatId = loginState.lastChatId;
-      console.log(baseurl + '/public-chat/formatted/after-id/' + lastChatId);
-      console.log(loginState.lastLogId);
+      // console.log(baseurl + '/public-chat/formatted/after-id/' + lastChatId);
+      // console.log(loginState.lastLogId);
       axios.get(baseurl + '/public-chat/formatted/after-id/' + lastChatId, { headers })
         .then((response) => {
           // setLoading(false);
@@ -242,7 +242,7 @@ const ChatStackScreen = ({ navigation }) => {
             }
             // Refresh Contest Log Code here...
             let lastLogId = loginState.lastLogId;
-            console.log(lastLogId);
+            // console.log(lastLogId);
             axios.get(baseurl + '/contest-log/formatted/after-id/' + lastLogId, { headers })
               .then((response) => {
                 const newLogData = response.data;
@@ -255,8 +255,8 @@ const ChatStackScreen = ({ navigation }) => {
                   // Remove messages with auto-generated IDs
                   let oldData = loginState.chatMessages;
                   oldData.filter(value => typeof (value._id) == 'number' || value._id.length < 30);
-                  console.log('oldData : ');
-                  console.log(oldData.length);
+                  // console.log('oldData : ');
+                  // console.log(oldData.length);
                   newData.sort((a, b) => {
                     const val1 = new Date(a.createdAt);
                     const val2 = new Date(b.createdAt);
@@ -268,21 +268,21 @@ const ChatStackScreen = ({ navigation }) => {
                     }
                     return 0;
                   });
-                  newData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
-                  console.log('newData : ');
-                  console.log(newData);
+                  // newData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+                  // console.log('newData : ');
+                  // console.log(newData);
                   dispatch({ type: 'SET_CHAT_MESSAGES', chatMessages: GiftedChat.append(oldData, newData), lastChatId: lastChatId, lastLogId: lastLogId });
-                  ToastAndroid.show(newData.length + ' new messages fetched successfully', ToastAndroid.SHORT);
+                  ToastAndroid.show(newData.length + ' new message' + (newData.length > 1 ? 's' : '') + ' fetched successfully', ToastAndroid.SHORT);
                 } else {
                   ToastAndroid.show('No new messages found', ToastAndroid.SHORT);
                 }
               })
               .catch((error) => {
                 // console.log('inner catch');
-                console.log('Inner Error');
-                console.log(error);
-                console.log(error.response);
-                showSweetAlert('error', 'Network Error', errorMessage);
+                // console.log('Inner Error');
+                // console.log(error);
+                // console.log(error.response);
+                // showSweetAlert('error', 'Network Error', errorMessage);
                 if (error.response && error.response.status === 401) {
                   logout();
                 }
@@ -293,18 +293,19 @@ const ChatStackScreen = ({ navigation }) => {
         })
         .catch((error) => {
           // setLoading(false);
-          console.log('Outer Error');
-          console.log(error);
-          console.log(error.response);
-          showSweetAlert('error', 'Network Error', errorMessage);
+          // console.log('Outer Error');
+          // console.log(error);
+          // console.log(error.response);
+          // showSweetAlert('error', 'Network Error', errorMessage);
           if (error.response && error.response.status === 401) {
             logout();
           }
         });
-    } else {
-      console.log('Token is null');
-      // showSweetAlert('error', 'Network Error', errorMessage);
-    }
+    } 
+    // else {
+    //   console.log('Token is null');
+    //   // showSweetAlert('error', 'Network Error', errorMessage);
+    // }
   };
 
   return (
@@ -412,7 +413,9 @@ const UserAvatar = (props) => {
         }
       })
       .catch((error) => {
-        showSweetAlert('error', 'Network Error', errorMessage);
+        // console.log(error);
+        // console.log(error.response);
+        // showSweetAlert('error', 'Network Error', errorMessage);
         if (error.response && error.response.status === 401) {
           logout();
         }

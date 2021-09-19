@@ -1,7 +1,9 @@
 // Localhost
 // export const baseurl = 'http://10.0.2.2:8080';
-// Hosted on Heroku
-export const baseurl = 'https://sports-geek.herokuapp.com';
+// API hosted on Heroku
+// export const baseurl = 'https://sports-geek.herokuapp.com';
+// New API hosted on Heroku
+export const baseurl = 'https://sportsgeekapi.herokuapp.com';
 
 // export default baseurl;
 

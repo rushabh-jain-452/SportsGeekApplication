@@ -56,6 +56,7 @@ const ScheduleScreen = ({ navigation }) => {
         }
         else {
           showSweetAlert('error', 'Network Error', errorMessage);
+          // console.log('Status : ' + response.status);
         }
       })
       .catch((error) => {

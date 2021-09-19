@@ -39,7 +39,7 @@ const getColor = (c) => {
         case 'Q':
           return '#EF476F';
         case 'R':
-          return '#6D6875';
+          return '#3F51B5';
         case 'S':
           return '#774936';
         case 'T':
@@ -51,9 +51,9 @@ const getColor = (c) => {
         case 'W':
           return '#38B000';
         case 'X':
-          return '#457B9D';
+          return '#6D6875';
         case 'Y':
-          return '#3F51B5';
+          return '#457B9D';
         case 'Z':
           return '#ED2F2F';
         default:

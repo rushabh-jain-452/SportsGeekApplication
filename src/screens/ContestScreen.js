@@ -215,8 +215,9 @@ const ContestScreen = (props) => {
 		// console.log('Type : ' + typeof(match_datetime));
 		// new Date(year, monthIndex [, day [, hours [, minutes [, seconds [, milliseconds]]]]])
 		const matchDate = new Date(str);
-		const match_date = new Date(matchDate.getUTCFullYear(), matchDate.getUTCMonth(), matchDate.getUTCDate(), matchDate.getUTCHours(), matchDate.getUTCMinutes(), matchDate.getUTCSeconds());
+		// const match_date = new Date(matchDate.getUTCFullYear(), matchDate.getUTCMonth(), matchDate.getUTCDate(), matchDate.getUTCHours(), matchDate.getUTCMinutes(), matchDate.getUTCSeconds());
 		// console.log('MatchDatetime : ' + match_date.toString());
+		// console.log(matchDate);
 		// console.log('CurrentDatetime : ' + current_datetime.toString());
 		// console.log(match_date - current_datetime);
 		// console.log(match_date < current_datetime);
@@ -232,8 +233,10 @@ const ContestScreen = (props) => {
 		else if (points < matchData.minimumPoints) {
 			showSweetAlert('warning', 'Invalid Bet Points', "Please enter Bet points greater than minimum limit of " + matchData.minimumPoints);
 		}
-		else if (match_date < current_datetime) {
+		// else if (match_date < current_datetime) {
+		else if (matchDate < current_datetime) {
 			showSweetAlert('warning', 'Match time out', "Sorry, the match has already started, so the Bets for this match are closed now.");
+			navigation.goBack();
 		}
 		else {
 			// LOGS
