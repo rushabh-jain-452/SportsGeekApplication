@@ -110,6 +110,7 @@ const ProfileScreen = ({ navigation }) => {
                       source={{
                         uri: data.profilePicture
                       }}
+                      onPress={() => { navigation.navigate('UpdateProfilePictureScreen') }}
                     />) :
                     (<Avatar
                       size="large"
@@ -117,6 +118,7 @@ const ProfileScreen = ({ navigation }) => {
                       title={data.shortName}
                       activeOpacity={0.7}
                       containerStyle={{ color: 'red', backgroundColor: getColor(data.shortName) }}
+                      onPress={() => { navigation.navigate('UpdateProfilePictureScreen') }}
                     />)
                 }
                 <View style={{ marginLeft: 20 }}>
@@ -144,6 +146,7 @@ const ProfileScreen = ({ navigation }) => {
                 <View style={styles.infoBox}>
                   <Caption style={{ color: Colors.blue }}>Available Points</Caption>
                   <Title style={{ color: Colors.blue, fontWeight: 'bold' }}>{data.availablePoints}</Title>
+                  <Text></Text>
                 </View>
                 <View style={styles.infoBox}>
                   <Caption style={{ color: Colors.green }}>Total Winnings</Caption>
@@ -160,10 +163,16 @@ const ProfileScreen = ({ navigation }) => {
           </View>
         }
         <View style={styles.menuWrapper}>
+          <TouchableRipple onPress={() => { navigation.navigate('UpdateProfilePictureScreen') }}>
+            <View style={styles.menuItem}>
+              <Icon name="account" color="#19398A" size={25} />
+              <Text style={styles.menuItemText}>Update Profile Picture</Text>
+            </View>
+          </TouchableRipple>
           <TouchableRipple onPress={() => { navigation.navigate('UpdateProfileScreen') }}>
             <View style={styles.menuItem}>
               <Icon name="account-edit" color="#19398A" size={25} />
-              <Text style={styles.menuItemText}>Update My Profile</Text>
+              <Text style={styles.menuItemText}>Update Profile Details</Text>
             </View>
           </TouchableRipple>
           <TouchableRipple onPress={() => navigation.navigate('changePasswordScreen')}>
@@ -222,6 +231,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     flexDirection: 'row',
     height: 100,
+    // alignItems: 'flex-start'
   },
   infoBox: {
     width: '33%',

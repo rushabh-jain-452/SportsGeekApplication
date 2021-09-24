@@ -189,11 +189,12 @@ const RemovePublicChatScreen = ({ navigation }) => {
 
 	return (
 		<View style={styles.container}>
+			<StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
 			<TouchableOpacity onPress={() => { navigation.goBack() }}><Icon name="arrow-left-circle" color="#19398A" size={40} style={{ marginLeft: 20, marginTop: 10 }} /></TouchableOpacity>
 			{/* <Text>Remove Public Chat</Text> */}
 			<Spinner visible={waiting} textContent="Loading..." animation="fade" textStyle={styles.spinnerTextStyle} />
 			{loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
-			<StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
+			<Text style={styles.heading}>Swipe left the Chat Message to delete</Text>
 			<SwipeListView
 				data={data}
 				renderItem={renderItem}
@@ -233,6 +234,14 @@ const styles = StyleSheet.create({
 		// justifyContent: 'center',
 		// height: 50,
 	},
+	heading: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 20,
+    textAlign: "center",
+    paddingTop: 5,
+		paddingBottom: 5,
+  },
 	txtMsg: {
 		paddingLeft: 10,
 		paddingRight: 10,

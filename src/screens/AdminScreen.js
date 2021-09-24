@@ -211,7 +211,7 @@ const AdminScreen = ({ navigation }) => {
             <TouchableRipple onPress={() => { navigation.navigate('RemovePublicChatScreen') }}>
               <View style={styles.menuItem}>
                 <Icon name="chat" color="#19398A" size={25} />
-                <Text style={styles.menuItemText}>Public Chat</Text>
+                <Text style={styles.menuItemText}>Delete Chat Message</Text>
               </View>
             </TouchableRipple>
           </View>

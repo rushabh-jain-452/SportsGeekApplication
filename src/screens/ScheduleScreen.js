@@ -18,7 +18,7 @@ const ScheduleScreen = ({ navigation }) => {
 
   // const navigation = useNavigation();
 
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -55,6 +55,7 @@ const ScheduleScreen = ({ navigation }) => {
           setData(filterData);
         }
         else {
+          setData([]);
           showSweetAlert('error', 'Network Error', errorMessage);
           // console.log('Status : ' + response.status);
         }
@@ -145,7 +146,7 @@ const ScheduleScreen = ({ navigation }) => {
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
-      <Text style={styles.heading}>{data.length < 1 && 'No '}Upcoming Matches</Text>
+      <Text style={styles.heading}>{(data && data.length < 1) && 'No '}Upcoming Matches</Text>
       {loading == true && (<ActivityIndicator size="large" color="#19398A" />)}
       <View style={styles.cardContainer}>
         {

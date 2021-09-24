@@ -7,6 +7,11 @@ import GenderScreen from '../screens/admin/GenderScreen';
 import ContestScreen from '../screens/ContestScreen';
 import ChangePasswordScreen from '../screens/ChangePasswordScreen';
 import UpdateProfileScreen from '../screens/UpdateProfileScreen';
+import LiveMatchDetailsScreen from '../screens/LiveMatchDetailsScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import PlayerDetailofTeam from '../screens/PlayerDetailofTeam';
+import UpdateProfilePictureScreen from '../screens/UpdateProfilePictureScreen';
+// Admin Screens
 import RoleScreen from '../screens/admin/RoleScreen';
 import PlayerTypeScreen from '../screens/admin/PlayerTypeScreen';
 import VenueScreen from '../screens/admin/VenueScreen';
@@ -25,11 +30,8 @@ import UpdateUserScreen from '../screens/admin/UpdateUserScreen';
 import ResultWithUsersScreen from '../screens/ResultWithUsersScreen';
 import UpdateMatchMinBet from '../screens/admin/UpdateMatchMinBet';
 import UpdateMatchMinBetSchedule from '../screens/admin/UpdateMatchMinBetSchedule';
-import LiveMatchDetailsScreen from '../screens/LiveMatchDetailsScreen';
 import UpdateActiveTournamentScreen from '../screens/admin/UpdateActiveTournamentScreen';
 import MatchesScheduleScreenForUpdate from '../screens/admin/MatchesScheduleScreenForUpdate';
-import ProfileScreen from '../screens/ProfileScreen';
-import PlayerDetailofTeam from '../screens/PlayerDetailofTeam';
 import PlayerDetailScreenForUpdate from '../screens/admin/PlayerDetailScreenForUpdate';
 import RemovePublicChatScreen from '../screens/admin/RemovePublicChatScreen';
 import MainTab from './MainTab';
@@ -42,6 +44,7 @@ const HomeStack = ({ navigation }) => (
     <Stack.Screen name="changePasswordScreen" component={ChangePasswordScreen} />
     <Stack.Screen name="GenderScreen" component={GenderScreen} />
     <Stack.Screen name="UpdateProfileScreen" component={UpdateProfileScreen} />
+    <Stack.Screen name="UpdateProfilePictureScreen" component={UpdateProfilePictureScreen} />
     <Stack.Screen name="ContestScreen" component={ContestScreen} />
     <Stack.Screen name="RoleScreen" component={RoleScreen} />
     <Stack.Screen name="PlayerTypeSCreen" component={PlayerTypeScreen} />

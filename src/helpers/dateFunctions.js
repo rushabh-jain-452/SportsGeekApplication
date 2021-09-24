@@ -74,7 +74,7 @@ export const formatDate = (dateStr) => {
     const yr = str.substring(11, 15);
     let hr = str.substring(16, 18);
     const min = str.substring(19, 21);
-    let ampm;
+    let ampm = 'AM';
     // if (hr < 12) {
     //   ampm = 'AM';
     // }

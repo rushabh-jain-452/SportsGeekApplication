@@ -2,9 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import {
 	View,
 	Text,
-	Button,
 	TouchableOpacity,
-	Dimensions,
 	TextInput,
 	Platform,
 	StyleSheet,
@@ -15,13 +13,10 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Animatable from 'react-native-animatable';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
-import ImagePicker from 'react-native-image-crop-picker';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { Avatar } from "react-native-elements";
 import axios from 'axios';
 
 import showSweetAlert from '../helpers/showSweetAlert';
-import getColor from '../helpers/getColor';
 import { baseurl, errorMessage } from '../config';
 import { AuthContext } from '../../App';
 
@@ -33,12 +28,8 @@ const UpdateProfileScreen = ({ navigation }) => {
 
 	// const [data, setData] = useState([]);
 
-	const [avatarPath, setAvatarPath] = useState('');
-	const [profilePicture, setProfilePicture] = useState('');
-	const [isProfilePictureChanged, setIsProfilePictureChanged] = useState(false);
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
-	const [shortName, setShortName] = useState('');
 	const [genderId, setGenderId] = useState(0);
 	const [email, setEmail] = useState('');
 	const [validEmail, setValidEmail] = useState(true);
@@ -65,6 +56,7 @@ const UpdateProfileScreen = ({ navigation }) => {
 				}
 			})
 			.catch((error) => {
+				console.log('Error-1');
 				showSweetAlert('error', 'Network Error', errorMessage);
 			});
 	}
@@ -77,17 +69,15 @@ const UpdateProfileScreen = ({ navigation }) => {
 					setEmail(response.data.email);
 					setFirstName(response.data.firstName);
 					setLastName(response.data.lastName);
-					setShortName(response.data.firstName.substr(0, 1) + response.data.lastName.substr(0, 1));
 					setMobileNumber(response.data.mobileNumber);
 					setGenderId(response.data.genderId);
-					setAvatarPath(response.data.profilePicture);
-					setProfilePicture(response.data.profilePicture);
 					// console.log(response.data);
 				} else {
 					showSweetAlert('error', 'Network Error', errorMessage);
 				}
 			})
 			.catch((error) => {
+				console.log(error);
 				setLoading(false);
 				showSweetAlert('error', 'Network Error', errorMessage);
 				if (error.response && error.response.status === 401) {
@@ -95,48 +85,6 @@ const UpdateProfileScreen = ({ navigation }) => {
 				}
 			});
 	}
-
-	const validateImage = (image) => {
-		let result = true;
-		if (image.height != image.width) {
-			result = false;
-			showSweetAlert('warning', 'Image validation failed!', 'Please select a square image.');
-		}
-		else if (image.mime != "image/jpeg" && image.mime != "image/png" && image.mime != "image/gif") {
-			result = false;
-			showSweetAlert('warning', 'Image validation failed!', 'Please select image of proper format. Only jpg, png and gif images are allowed.');
-		}
-		else if (image.size > 10485760) {
-			result = false;
-			showSweetAlert('warning', 'Image validation failed!', 'Please select image having size less than 10 MB.');
-		}
-		return result;
-	}
-
-	const photoSelectHandler = () => {
-		ImagePicker.openPicker({
-			width: 300,
-			height: 300,
-			cropping: true
-		}).then((image) => {
-			if (validateImage(image)) {
-				// console.log("Image path : " + image.path);
-				// console.log(image);
-				setAvatarPath(image.path);
-				setProfilePicture(image);
-				console.log(image);
-				setIsProfilePictureChanged(true);
-			}
-		}).catch((error) => {
-			showSweetAlert('warning', 'Image not selected', 'Image not selected for Profile Picture.');
-		});
-	}
-
-	const photoRemoveHandler = () => {
-		setAvatarPath('');
-		setProfilePicture('');
-		setIsProfilePictureChanged(true);
-	};
 
 	const updateProfileHandler = () => {
 		if (firstName.length < 3) {
@@ -163,18 +111,8 @@ const UpdateProfileScreen = ({ navigation }) => {
 			formData.append('email', email);
 			formData.append('mobileNumber', mobileNumber);
 			formData.append('genderId', genderId);
-			formData.append('updateProfilePicture', isProfilePictureChanged);
-			if (isProfilePictureChanged && profilePicture != '') {
-				const picturePath = profilePicture.path;
-				const pathParts = picturePath.split('/');
-				formData.append('profilePicture', {
-					name: pathParts[pathParts.length - 1],
-					type: profilePicture.mime,
-					uri: profilePicture.path
-				});
-			} else {
-				formData.append('profilePicture', null);
-			}
+			formData.append('profilePicture', null);
+			formData.append('updateProfilePicture', false);
 			const headers = {
 				'Content-Type': 'multipart/form-data',
 				'Authorization': 'Bearer ' + loginState.token
@@ -210,47 +148,13 @@ const UpdateProfileScreen = ({ navigation }) => {
 			<Spinner visible={loading} textContent="Loading..." animation="fade" textStyle={styles.spinnerTextStyle} />
 			<StatusBar backgroundColor="#1F4F99" barStyle="light-content" />
 			<View style={styles.header}>
-				<Text style={styles.text_header}>Update Profile</Text>
+				<Text style={styles.text_header}>Update Profile Details</Text>
 			</View>
 			<Animatable.View
 				animation="fadeInUpBig"
 				style={styles.footer}
 			>
 				<ScrollView keyboardShouldPersistTaps="handled">
-					<View style={styles.avatarContainer}>
-						{
-							avatarPath != '' ?
-								(<Avatar
-									size="large"
-									rounded
-									source={{
-										uri: avatarPath
-									}}
-									onPress={() => { photoSelectHandler() }}
-								/>) :
-								(<Avatar
-									size="large"
-									rounded
-									title={shortName}
-									activeOpacity={0.7}
-									containerStyle={{ color: 'red', backgroundColor: getColor(shortName), marginTop: 10 }}
-									onPress={() => { photoSelectHandler() }}
-								/>)
-						}
-					</View>
-					<TouchableOpacity
-						style={styles.buttonStyle}
-						onPress={() => { photoSelectHandler() }}>
-						<Text style={styles.buttonTextStyle}>
-							{profilePicture == '' ? "Select Profile Picture" : "Change Profile Picture"}
-						</Text>
-					</TouchableOpacity>
-					{avatarPath != '' &&
-						(<TouchableOpacity
-							style={styles.removeButtonStyle}
-							onPress={() => { photoRemoveHandler() }}>
-							<Text style={styles.buttonTextStyle}>Remove Profile Picture</Text>
-						</TouchableOpacity>)}
 					<Text style={[styles.text_footer, { marginTop: 10 }]}>First Name</Text>
 					<View style={styles.action}>
 						<FontAwesome
@@ -514,47 +418,11 @@ const styles = StyleSheet.create({
 		borderRadius: 50,
 		backgroundColor: '#19398A',
 	},
-	buttonStyle: {
-		backgroundColor: '#19398A',
-		borderWidth: 0,
-		color: '#FFFFFF',
-		borderColor: '#307ecc',
-		height: 40,
-		alignItems: 'center',
-		borderRadius: 30,
-		width: 200,
-		alignSelf: 'center',
-		// marginLeft: 80,
-		// marginRight: 35,
-		marginTop: 10,
-		marginBottom: 15
-	},
-	removeButtonStyle: {
-		backgroundColor: '#19398A',
-		borderWidth: 0,
-		color: '#FFFFFF',
-		borderColor: '#307ecc',
-		height: 40,
-		alignItems: 'center',
-		borderRadius: 30,
-		width: 200,
-		alignSelf: 'center',
-		marginBottom: 20
-	},
-	buttonTextStyle: {
-		color: '#FFFFFF',
-		paddingVertical: 10,
-		fontSize: 16,
-	},
 	spinnerTextStyle: {
 		color: '#FFF'
 	},
 	errorMsg: {
 		color: '#FF0000',
 		fontSize: 14,
-	},
-	avatarContainer: {
-		display: 'flex',
-		alignItems: 'center'
 	},
 });
