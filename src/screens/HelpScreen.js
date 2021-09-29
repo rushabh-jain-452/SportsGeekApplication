@@ -13,7 +13,7 @@ const HelpScreen = ({ navigation }) => {
       <Text style={styles.listitem}>4.If you do not bet on any match, your bet will be put automatically on the losing team of 10 points.</Text>
       <Text style={styles.listitem}>5.Simple principle <Text style={styles.bold}>"Winners win what losers lose in that match, in the same proportion of their bet"</Text>.</Text>
       <Text style={styles.listitem}>6.Losers do not get anything from losing match.</Text>
-      <Text style={styles.listitem}>7.Your total points will be visible in the Profile Tab.</Text>
+      <Text style={styles.listitem}>7.You can see your points in the Profile Screen.</Text>
       <Text style={styles.listitem}>8.You can bet anytime, update any number of times and any amount until the match has started.</Text>
       <View style={styles.border}></View>
       <Text style={styles.heading2}>Distribution among winners at the end of IPL Season</Text>

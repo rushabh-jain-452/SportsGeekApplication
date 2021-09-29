@@ -177,7 +177,11 @@ const LiveMatches = ({ navigation }) => {
               </View>
               <View style={styles.dividerStyle} ></View>
               <View>
-                <Text style={styles.bet}>My Bet --&gt; {item.contestPoints} points on {item.teamName}</Text>
+                {
+                  item.teamName == 'NA' ?
+                  <Text style={styles.bet}>My Bet --&gt; Not placed</Text> :
+                  <Text style={styles.bet}>My Bet --&gt; {item.contestPoints} points on {item.teamName}</Text>
+                }
               </View>
             </TouchableOpacity>
           );
@@ -281,7 +285,11 @@ const Results = ({ navigation }) => {
               </View>
               <View style={styles.dividerStyle} ></View>
               <View>
-                <Text style={styles.bet}>My Bet --&gt; {item.contestPoints} points on {item.teamName}</Text>
+                {
+                  item.teamName == 'NA' ?
+                  <Text style={styles.bet}>My Bet --&gt; Points not available</Text> :
+                  <Text style={styles.bet}>My Bet --&gt; {item.contestPoints} points on {item.teamName}</Text>
+                }
               </View>
             </TouchableOpacity>
           );

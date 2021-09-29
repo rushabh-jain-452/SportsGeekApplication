@@ -31,10 +31,11 @@ export const getNumberFromDate = (str) => {
     // console.log(str);
     // 2021-08-23T19:30:00.000+00:00
     const day = parseInt(str.substring(8, 10));
-    const mth = parseInt(str.substring(5, 7));
-    const yr = parseInt(str.substring(0, 4));
-    const total = day + mth + yr;
-    return total % 2;
+    // const mth = parseInt(str.substring(5, 7));
+    // const yr = parseInt(str.substring(0, 4));
+    // const total = day + mth + yr;
+    // return total % 2;
+    return day % 2;
   }
   catch (err) {
     return 0;

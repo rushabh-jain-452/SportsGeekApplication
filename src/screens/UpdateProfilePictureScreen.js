@@ -90,7 +90,7 @@ const UpdateProfilePictureScreen = ({ navigation }) => {
         // console.log(image);
         // setAvatarPath(image.path);
         // setProfilePicture(image);
-        console.log(image);
+        // console.log(image);
         uploadProfilePictureHandler(image);
       }
     }).catch((error) => {

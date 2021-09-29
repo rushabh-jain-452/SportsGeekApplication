@@ -61,7 +61,7 @@ const AdminScreen = ({ navigation }) => {
           </View>
         </CollapseBody>
       </Collapse>
-      <Collapse>
+      {/* <Collapse>
         <CollapseHeader>
           <View style={styles.menuWrapper}>
             <TouchableRipple onPress={() => { navigation.navigate('GenderScreen') }}>
@@ -72,7 +72,7 @@ const AdminScreen = ({ navigation }) => {
             </TouchableRipple>
           </View>
         </CollapseHeader>
-      </Collapse>
+      </Collapse> */}
       <Collapse>
         <CollapseHeader>
           <View style={styles.menuWrapper}>
@@ -104,7 +104,7 @@ const AdminScreen = ({ navigation }) => {
           <View style={styles.menuWrapper}>
             <View style={styles.menuItem}>
               <Icon name="cricket" color="#19398A" size={25} />
-              <Text style={styles.menuItemText}> Players</Text>
+              <Text style={styles.menuItemText}>Players</Text>
             </View>
           </View>
         </CollapseHeader>
@@ -137,7 +137,7 @@ const AdminScreen = ({ navigation }) => {
             <TouchableRipple onPress={() => { navigation.navigate('TeamScreen') }}>
               <View style={styles.menuItem}>
                 <Icon name="microsoft-teams" color="#19398A" size={25} />
-                <Text style={styles.menuItemText}> Teams</Text>
+                <Text style={styles.menuItemText}>Teams</Text>
               </View>
             </TouchableRipple>
           </View>
@@ -148,7 +148,7 @@ const AdminScreen = ({ navigation }) => {
           <View style={styles.menuWrapper}>
             <View style={styles.menuItem}>
               <Icon name="cricket" color="#19398A" size={25} />
-              <Text style={styles.menuItemText}> Matches</Text>
+              <Text style={styles.menuItemText}>Matches</Text>
             </View>
           </View>
         </CollapseHeader>
@@ -193,7 +193,7 @@ const AdminScreen = ({ navigation }) => {
           </View>
         </CollapseHeader>
       </Collapse>
-      <Collapse>
+      {/* <Collapse>
         <CollapseHeader>
           <View style={styles.menuWrapper}>
             <TouchableRipple onPress={() => { navigation.navigate('RoleScreen') }}>
@@ -204,7 +204,7 @@ const AdminScreen = ({ navigation }) => {
             </TouchableRipple>
           </View>
         </CollapseHeader>
-      </Collapse>
+      </Collapse> */}
       <Collapse>
         <CollapseHeader>
           <View style={styles.menuWrapper}>
