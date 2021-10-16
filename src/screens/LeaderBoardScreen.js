@@ -86,8 +86,28 @@ const LeaderBoard = (props) => {
           });
           // console.log('After Adding Future Points : ');
           // console.log(pointsData);
-          pointsData.sort((a, b) => (b.availablePoints - a.availablePoints));
-          pointsData.forEach((item, index) => item.rank = index + 1);
+          // pointsData.sort((a, b) => (b.availablePoints - a.availablePoints));
+          pointsData.sort((a, b) => {
+            if (a.availablePoints < b.availablePoints) {
+              return 1;
+            } else if (a.availablePoints > b.availablePoints) {
+              return -1;
+            } else {
+              const val1 = a.firstName.toLowerCase() + ' ' + a.lastName.toLowerCase();
+              const val2 = b.firstName.toLowerCase() + ' ' + b.lastName.toLowerCase();
+              if (val1 < val2) {
+                return -1;
+              }
+              if (val1 > val2) {
+                return 1;
+              }
+              return 0;
+            }
+          });
+          // pointsData.forEach((item, index) => item.rank = index + 1);
+          // Same rank for same points
+          const pointsArr = [...new Set(pointsData.map(item => item.availablePoints))];
+          pointsData.forEach((item, index) => item.rank = pointsArr.indexOf(item.availablePoints) + 1);
           // console.log('After Sorting : ');
           // console.log(pointsData);
           setData(pointsData);
@@ -233,7 +253,7 @@ export default LeaderBoard;
 const TopUser = (props) => {
   const data = props.data;
   const rank = props.rank;
-  const avatarSize = rank == 3 ? 'medium' : 'large';
+  const avatarSize = rank == 1 ? 'large' : 'medium';
 
   return (
     <View style={[styles.box, props.boxStyle]}>
