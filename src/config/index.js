@@ -3,7 +3,10 @@
 // API hosted on Heroku
 // export const baseurl = 'https://sports-geek.herokuapp.com';
 // New API hosted on Heroku
-export const baseurl = 'https://sportsgeekapi.herokuapp.com';
+// export const baseurl = 'https://sportsgeekapi.herokuapp.com';
+
+// New API on AWS
+export const baseurl = 'http://13.200.133.225:8080';
 
 // export default baseurl;
 
