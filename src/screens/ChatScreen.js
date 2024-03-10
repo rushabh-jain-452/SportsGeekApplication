@@ -57,7 +57,7 @@ const ChatScreen = () => {
             // console.log('lastChatId: ' + lastChatId);
           }
           // Required for Live AWS Database
-          // data.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+          data.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
           // data.push({
           //   _id: 0,
           //   text: 'Welcome to SportsGeek Public Chat',
@@ -93,7 +93,7 @@ const ChatScreen = () => {
             // console.log('lastLogId: ' + lastLogId);
           }
           // Required for Live AWS Database
-          // logData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+          logData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
           // console.log('chat data : ');
           // console.log(chatData);
           // console.log(typeof(chatData));
@@ -185,7 +185,7 @@ const ChatScreen = () => {
             if (newChatData.length > 0) {
               lastChatId = newChatData[0]._id;
               // Required for Live AWS Database
-              // newChatData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+              newChatData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
             }
             // Refresh Contest Log Code here...
             let lastLogId = loginState.lastLogId;
