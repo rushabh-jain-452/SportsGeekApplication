@@ -96,7 +96,7 @@ const UpdateProfileScreen = ({ navigation }) => {
 		else if (!validEmail) {
 			showSweetAlert('warning', 'Invalid Input!', 'Please enter email to proceed.');
 		}
-		else if (mobileNumber.length < 9) {
+		else if (mobileNumber.length < 10) {
 			showSweetAlert('warning', 'Invalid Input!', 'Please enter mobile number to proceed.');
 		}
 		else if (genderId == 0) {
@@ -295,10 +295,10 @@ const UpdateProfileScreen = ({ navigation }) => {
 							autoCapitalize="none"
 							onChangeText={(val) => setMobileNumber(val)}
 							keyboardType="number-pad"
-							maxLength={15}
+							maxLength={10}
 							value={mobileNumber + ""}
 						/>
-						{mobileNumber.length > 0 ?
+						{mobileNumber.length > 0 && mobileNumber.length == 10 ?
 							<Animatable.View
 								animation="bounceIn"
 							>
@@ -310,7 +310,7 @@ const UpdateProfileScreen = ({ navigation }) => {
 							</Animatable.View>
 							: null}
 					</View>
-					{(mobileNumber.length > 0 && mobileNumber.length < 9) ?
+					{(mobileNumber.length > 0 && mobileNumber.length < 10) ?
 						<Animatable.View animation="fadeInLeft" duration={500}>
 							<Text style={styles.errorMsg}>Please enter valid mobile number.</Text>
 						</Animatable.View>

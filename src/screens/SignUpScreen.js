@@ -140,7 +140,7 @@ const SignUpScreen = ({ navigation }) => {
 			showSweetAlert('warning', 'Invalid Input!', 'Please enter valid email of Gmail to proceed.');
 			// showSweetAlert('warning', 'Invalid Input!', 'Please enter valid email.');
 		}
-		else if (mobileNumber.length < 9) {
+		else if (mobileNumber.length < 10) {
 			showSweetAlert('warning', 'Invalid Input!', 'Please enter valid mobile number to proceed.');
 		}
 		else if (genderId == 0) {
@@ -401,7 +401,7 @@ const SignUpScreen = ({ navigation }) => {
 							</Animatable.View>
 							: null}
 					</View>
-					{(mobileNumber.length > 0 && mobileNumber.length < 9) ?
+					{(mobileNumber.length > 0 && mobileNumber.length < 10) ?
 						<Animatable.View animation="fadeInLeft" duration={500}>
 							<Text style={styles.errorMsg}>Please enter valid mobile number.</Text>
 						</Animatable.View>
