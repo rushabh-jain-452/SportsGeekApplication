@@ -137,7 +137,8 @@ const SignUpScreen = ({ navigation }) => {
 		}
 		else if (!validEmail) {
 			// showSweetAlert('warning', 'Invalid Input!', 'Please enter valid email of BBD domain to proceed.');
-			showSweetAlert('warning', 'Invalid Input!', 'Please enter valid email.');
+			showSweetAlert('warning', 'Invalid Input!', 'Please enter valid email of Gmail to proceed.');
+			// showSweetAlert('warning', 'Invalid Input!', 'Please enter valid email.');
 		}
 		else if (mobileNumber.length < 9) {
 			showSweetAlert('warning', 'Invalid Input!', 'Please enter valid mobile number to proceed.');
@@ -368,7 +369,8 @@ const SignUpScreen = ({ navigation }) => {
 					{(email.length > 0 && !validEmail) ?
 						<Animatable.View animation="fadeInLeft" duration={500}>
 							{/* <Text style={styles.errorMsg}>Please enter valid email of BBD domain only.</Text> */}
-							<Text style={styles.errorMsg}>Please enter valid email.</Text>
+							<Text style={styles.errorMsg}>Please enter valid email of Gmail only.</Text>
+							{/* <Text style={styles.errorMsg}>Please enter valid email.</Text> */}
 						</Animatable.View>
 						: null
 					}
