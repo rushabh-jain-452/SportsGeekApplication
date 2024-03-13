@@ -344,7 +344,8 @@ const SignUpScreen = ({ navigation }) => {
 							onChangeText={(val) => {
 								setEmail(val);
 								// if (val.match(email_regex) && val.includes("@bbd.co.za"))
-								if (val.match(email_regex))
+								if (val.match(email_regex) && val.includes("gmail.com"))
+								// if (val.match(email_regex))
 									setValidEmail(true);
 								else
 									setValidEmail(false);

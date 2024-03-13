@@ -51,7 +51,8 @@ const ForgetPasswordScreen = () => {
     const ForgetPasswordHandler = () => {
         if (!validEmail) {
             // showSweetAlert('warning', 'Invalid Input!', 'Please enter valid email of BBD domain to proceed.');
-            showSweetAlert('warning', 'Invalid Input!', 'Please enter valid email to proceed.');
+            showSweetAlert('warning', 'Invalid Input!', 'Please enter valid email of Gmail to proceed.');
+            // showSweetAlert('warning', 'Invalid Input!', 'Please enter valid email to proceed.');
         }
         else if (mobileNumber.length < 9) {
             showSweetAlert('warning', 'Invalid Input!', 'Please enter valid mobile number to proceed.');
@@ -170,7 +171,8 @@ const ForgetPasswordScreen = () => {
                             onChangeText={(val) => {
                                 setEmail(val);
                                 // if (val.match(email_regex) && val.includes("bbd.co.za"))
-                                if (val.match(email_regex))
+                                if (val.match(email_regex) && val.includes("gmail.com"))
+                                // if (val.match(email_regex))
                                     setValidEmail(true);
                                 else
                                     setValidEmail(false);
@@ -194,7 +196,8 @@ const ForgetPasswordScreen = () => {
                     {(email.length > 0 && !validEmail) ?
                         <Animatable.View animation="fadeInLeft" duration={500}>
                             {/* <Text style={styles.errorMsg}>Please enter valid email of BBD domain only.</Text> */}
-                            <Text style={styles.errorMsg}>Please enter valid email.</Text>
+                            <Text style={styles.errorMsg}>Please enter valid email of Gmail only.</Text>
+                            {/* <Text style={styles.errorMsg}>Please enter valid email.</Text> */}
                         </Animatable.View>
                         : null
                     }
