@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   // },
   card: {
     width: '96%',
-    height: 160,
+    // height: 160,
     borderWidth: 2,
     borderColor: '#19398A',
     borderRadius: 10,
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   resultCard: {
-    height: 192
+    // height: 192
   },
   bgColorOdd: {
     // backgroundColor: "#DFE7FD",
