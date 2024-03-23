@@ -57,7 +57,7 @@ const ChatScreen = () => {
             // console.log('lastChatId: ' + lastChatId);
           }
           // Required for Live AWS Database
-          data.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+          // data.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
           // data.push({
           //   _id: 0,
           //   text: 'Welcome to SportsGeek Public Chat',
@@ -93,7 +93,7 @@ const ChatScreen = () => {
             // console.log('lastLogId: ' + lastLogId);
           }
           // Required for Live AWS Database
-          logData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+          // logData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
           // console.log('chat data : ');
           // console.log(chatData);
           // console.log(typeof(chatData));
@@ -115,7 +115,7 @@ const ChatScreen = () => {
             }
             return 0;
           });
-          // finalData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+          finalData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
           // console.log('Final Data after sorting : ');
           // console.log(finalData);
           finalData.push({
@@ -172,6 +172,11 @@ const ChatScreen = () => {
   // };
 
   const refreshChatMessages = () => {
+    // Test
+    // dt1 = new Date("2024-03-23T14:45:47.000+00:00");
+    // var newDate = new Date(dt1.getTime() + (dt1.getTimezoneOffset() * 60 * 1000));
+    // console.log(newDate.toISOString());
+
     // ToastAndroid.show('Fetching new messages...', ToastAndroid.SHORT);
     if (loginState.token) {
       // setLoading(true);
@@ -185,7 +190,7 @@ const ChatScreen = () => {
             if (newChatData.length > 0) {
               lastChatId = newChatData[0]._id;
               // Required for Live AWS Database
-              newChatData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+              // newChatData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
             }
             // Refresh Contest Log Code here...
             let lastLogId = loginState.lastLogId;
@@ -194,6 +199,7 @@ const ChatScreen = () => {
                 const newLogData = response.data;
                 if (newLogData.length > 0) {
                   lastLogId = newLogData[0]._id.substr(1);
+                  // newLogData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
                 }
                 const newData = newChatData.concat(newLogData);
                 if (newData.length > 0) {
@@ -214,7 +220,7 @@ const ChatScreen = () => {
                     }
                     return 0;
                   });
-                  // newData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+                  newData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
                   // console.log('newData : ');
                   // console.log(newData);
                   dispatch({ type: 'SET_CHAT_MESSAGES', chatMessages: GiftedChat.append(oldData, newData), lastChatId: lastChatId, lastLogId: lastLogId });

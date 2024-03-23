@@ -268,7 +268,7 @@ const ChatStackScreen = ({ navigation }) => {
                     }
                     return 0;
                   });
-                  // newData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
+                  newData.forEach((item) => item.createdAt = convertUTCDateToLocalDate(new Date(item.createdAt)));
                   // console.log('newData : ');
                   // console.log(newData);
                   dispatch({ type: 'SET_CHAT_MESSAGES', chatMessages: GiftedChat.append(oldData, newData), lastChatId: lastChatId, lastLogId: lastLogId });
