@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Generate Insert Query</h1>
+    <form name="myform" id="myform" method="GET" action="" onsubmit="return generate()">
+        Match no:
+        <input type="number" name="matchno" id="matchno" />
+        <br/>
+        Date:
+        <input type="date" name="mydate" id="mydate" />
+        <br/>
+        Time:
+        <select name="matchtime" id="matchtime">
+            <option value="15:30:00">3:30</option>
+            <option value="19:30:00">7:30</option>
+        </select>
+        <br/>
+        Team-1:
+        <select name="team1combo" id="team1combo">
+        </select>
+        <br/>
+        Team-2:
+        <select name="team2combo" id="team2combo">
+        </select>
+        <br/>
+        Venue:
+        <select name="venueCombo" id="venueCombo">
+        </select>
+        <br/>
+        <button type="submit">Submit</button>
+    </form>
+    <hr/>
+    <h3>Output</h3>
+    <span id="output"></span>
+    <br/><br/>
+    <button onclick="copyFunction()">Copy text</button>
+</body>
+<script>
+    const teams_arr = ['CSK', 'DC', 'GT', 'KKR', 'LSG', 'MI', 'PBKS', 'RR', 'RCB', 'SRH', 'TBC'];
+
+    const venue_arr = [
+        'Narendra Modi Stadium, Ahmedabad',
+        'Punjab Cricket Association IS Bindra Stadium, Mohali',
+        'Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium, Lucknow',
+        'Rajiv Gandhi International Stadium, Hyderabad',
+        'M. Chinnaswamy Stadium, Bengaluru',
+        'M. A. Chidambaram Stadium, Chennai',
+        'Arun Jaitley Stadium, Delhi',
+        'Barsapara Cricket Stadium, Guwahati',
+        'Eden Gardens, Kolkata',
+        'Wankhede Stadium, Mumbai',
+        'Sawai Mansingh Stadium, Jaipur',
+        'Himachal Pradesh Cricket Association Stadium, Dharamsala',
+        'PCA New Stadium, Mullanpur',
+        'Dr YS Rajasekhara Reddy ACA-VDCA Cricket Stadium, Visakhapatnam'
+    ];
+
+    // Fill comboboxes
+    // teams_arr.forEach(team => )
+    // let optionsHtml = '';
+    for(let i=0; i < teams_arr.length; i++) {
+        // optionsHtml += '<option value="' + (i+1) + ',' + teams_arr[i] + '">' + teams_arr[i] + '<option>';
+        // Team-1    
+        let option = document.createElement("option");
+        option.text = teams_arr[i];
+        option.value = (i+1) + ',' + teams_arr[i];
+        document.getElementById("team1combo").add(option);
+
+        // Team-1    
+        let option2 = document.createElement("option");
+        option2.text = teams_arr[i];
+        option2.value = (i+1) + ',' + teams_arr[i];
+        document.getElementById("team2combo").add(option2);
+    }
+    // document.getElementById("team1combo").innerHTML = optionsHtml;
+    // document.getElementById("team1combo").innerHTML = 'abcd';
+
+    for(let i=0; i < venue_arr.length; i++) {
+        let option = document.createElement("option");
+        option.text = venue_arr[i];
+        option.value = i+1;
+        document.getElementById("venueCombo").add(option);
+    }
+
+    function generate() {
+        // alert("Hello");
+        let insert_stmt = "(";
+
+        let matchno = document.getElementById("matchno").value;
+        insert_stmt += matchno + ",1,'";
+
+        let team1Text = document.getElementById("team1combo").value;
+        // alert(team1Text);
+        let team1_arr = team1Text.split(',');
+        // alert(team1_arr[0] + ' ' + team1_arr[1]);
+        insert_stmt += team1_arr[1] + " vs ";
+
+        let team2Text = document.getElementById("team2combo").value;
+        // alert(team1Text);
+        let team2_arr = team2Text.split(',');
+        // alert(team1_arr[0] + ' ' + team1_arr[1]);
+        insert_stmt += team2_arr[1] + "','";
+
+        let mydate = document.getElementById("mydate").value;
+        insert_stmt += mydate + " ";
+
+        let matchtime = document.getElementById("matchtime").value;
+        insert_stmt += matchtime + "',";
+
+        let venueId = document.getElementById("venueCombo").value;
+        // alert(venueId);
+        insert_stmt += venueId + ",";
+
+        insert_stmt += team1_arr[0] + "," + team2_arr[0] + ",NULL,NULL,10,CURRENT_TIMESTAMP),";
+
+        document.getElementById("output").innerText = insert_stmt;
+        return false;
+    }
+
+    function copyFunction() {
+        // alert('copyFunction called...');
+
+        // Get the text field
+        var copyText = document.getElementById("output");
+
+        // Select the text field
+        // copyText.select();
+        // copyText.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy the text inside the text field
+        // navigator.clipboard.writeText(copyText.value);
+        navigator.clipboard.writeText(copyText.innerText);
+
+        // document.execCommand("Copy");
+
+        // alert(copyText.innerText);
+
+        // Alert the copied text
+        // alert("Copied the text: " + copyText.value);
+    }
+
+    document.getElementById("output").addEventListener("click", copyFunction);
+</script>
+</html>
