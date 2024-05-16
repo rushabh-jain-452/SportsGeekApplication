@@ -86,14 +86,16 @@ const UpdateMatchResultScreen = (props) => {
 			setLoading(true);
 			// showConfirmAlert('warning', 'Confirmation', "Do you really want to update the match result ?");
 			let resultstatus = 1;
+			let myWinnerTeamId = winnerTeamId;
 			if (winnerTeamId == 0){
 				resultstatus = 0;
 			}
 			else if (winnerTeamId == -1){
 				resultstatus = 2;
-				winnerTeamId = 0;
+				// winnerTeamId = 0;
+				myWinnerTeamId = 0;
 			}
-			axios.put(baseurl + '/matches/update-match/' + matchId + '/' + resultstatus + '/' + winnerTeamId, {}, { headers })
+			axios.put(baseurl + '/matches/update-match/' + matchId + '/' + resultstatus + '/' + myWinnerTeamId, {}, { headers })
 				.then((response) => {
 					setLoading(false);
 					if (response.status == 200) {

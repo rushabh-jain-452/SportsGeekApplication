@@ -74,7 +74,7 @@ const ScheduleScreen = ({ navigation }) => {
       });
   }
 
-  const handleCardClick = (startDatetime, matchId) => {
+  const handleCardClick = (startDatetime, matchId, team1Short, team2Short) => {
     // Alert.alert(item.team1 + ' vs ' + item.team2);
     // Alert.alert(index.toString());
     const startDate = new Date(startDatetime);
@@ -90,6 +90,9 @@ const ScheduleScreen = ({ navigation }) => {
       fetchData();
     }
     else if (diffDays > noOfDaysFutureBets) {
+      showSweetAlert('warning', 'Out of Schedule', 'Sorry, Bets for this match are not opened yet.');
+    }
+    else if (team1Short == 'TBC' || team2Short == 'TBC') {
       showSweetAlert('warning', 'Out of Schedule', 'Sorry, Bets for this match are not opened yet.');
     }
     else {
@@ -154,7 +157,7 @@ const ScheduleScreen = ({ navigation }) => {
             const n = getNumberFromDate(item.startDatetime);
             const mystyle = n === 0 ? styles.bgColorEven : styles.bgColorOdd;
             return (
-              <TouchableOpacity style={[styles.card, mystyle]} key={item.matchId} onPress={() => { handleCardClick(item.startDatetime, item.matchId) }}>
+              <TouchableOpacity style={[styles.card, mystyle]} key={item.matchId} onPress={() => { handleCardClick(item.startDatetime, item.matchId, item.team1Short, item.team2Short) }}>
                 <View>
                   <Text style={styles.date}>{formatDate(item.startDatetime)}</Text>
                 </View>
