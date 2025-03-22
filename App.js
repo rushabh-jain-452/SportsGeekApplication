@@ -8,6 +8,8 @@
 
 import React, { useEffect } from 'react';
 import type { Node } from 'react';
+import axios from 'axios';
+
 // import { ToastAndroid } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
@@ -44,6 +46,7 @@ const App: () => Node = () => {
     username: null,
     role: null,
     token: null,
+    backendUrl: null,
     chatMessages: [],
     lastChatId: 0,
     lastLogId: 0,
@@ -144,6 +147,11 @@ const App: () => Node = () => {
           ...prevState,
           chatMessages: prevState.chatMessages.concat(action.newMessages),
         };
+      case 'SET_BACKEND_URL':
+        return {
+          ...prevState,
+          backendUrl: action.backendUrl
+        };
       default:
         return prevState;
     }
@@ -198,13 +206,62 @@ const App: () => Node = () => {
   //   }, 1000);
   // }, []);
 
+  const getBackendUrl = async () => {
+    try {
+      const response = await axios.get('https://sportsgeek-url-node-project.vercel.app/sportsgeek-url');
+      console.log(response);
+      // console.log(response.data.url);
+      // await AsyncStorage.setItem('backendUrl', response.data.backendUrl);
+      return response.data.url;
+    } catch(err) {
+      console.log(err);
+    }
+    return "";
+
+    // console.log('getBackendUrl() method called...');
+    // axios.get('https://sportsgeek-url-node-project.vercel.app/sportsgeek-url')
+    // .then((response) => {
+    //   if (response.status == 200) {
+    //     // console.log('Backend URL : ' + response.data);
+    //     console.log(response.data);
+    //     // Set backend url in async storage
+    //     await AsyncStorage.setItem('token', token);
+    //     console.log('Backend url saved successfully');
+    //   } else {
+    //     console.log('Invalid Response : ' + response.data);
+    //   }
+    // })
+    // .catch((error) => {
+    //   console.log(error);
+    //   // console.log(error.response);
+    // });
+  }
+
   useEffect(async () => {
     // dispatch({ type: 'RETRIEVE_TOKEN', token: token });
     const userId = await AsyncStorage.getItem('userId');
     const username = await AsyncStorage.getItem('username');
     const role = await AsyncStorage.getItem('role');
     const token = await AsyncStorage.getItem('token');
+    let backendUrl = await AsyncStorage.getItem('backendUrl');
+    // console.log('Backend URL from AsyncStorage : ' + backendUrl);
+    if(backendUrl == null) {
+      backendUrl = await getBackendUrl();
+      if(backendUrl != null && backendUrl != "") {
+        await AsyncStorage.setItem('backendUrl', backendUrl);
+        dispatch({ type: 'SET_BACKEND_URL', backendUrl: backendUrl });
+        // console.log('Backend url stored successfully in Async Storage');
+      } else {
+        // set default url
+        dispatch({ type: 'SET_BACKEND_URL', backendUrl: 'http://127.0.0.1:8080' });
+      }
+    } else {
+      dispatch({ type: 'SET_BACKEND_URL', backendUrl: backendUrl });
+      // console.log('Backend url stored successfully in Async Storage');
+    }
     dispatch({ type: 'LOGIN', userId: userId, username: username, role: role, token: token });
+    // Get Baseurl
+    // getBackendUrl();
   }, []);
 
   // if( loginState.isLoading ) {

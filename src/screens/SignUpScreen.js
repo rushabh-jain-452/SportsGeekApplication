@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
 	View,
 	Text,
@@ -21,9 +21,13 @@ import axios from 'axios';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { baseurl, errorMessage } from '../config';
+import { AuthContext } from '../../App';
+import { errorMessage } from '../config';
 
 const SignUpScreen = ({ navigation }) => {
+	const { loginState } = useContext(AuthContext);
+	// console.log('Backend URL in SignUp Screen : ' + loginState.backendUrl);
+	let baseurl = loginState.backendUrl;
 
 	// const userAvatarLogo = 'https://firebasestorage.googleapis.com/v0/b/sportsgeek-74e1e.appspot.com/o/4190b851-0e15-454d-84f3-1387c972555b.jpg?alt=media'; 
 	const userAvatarLogo = 'https://firebasestorage.googleapis.com/v0/b/sportsgeek-74e1e.appspot.com/o/69bba4a0-c114-4379-9854-e4381a3130bc.png?alt=media';
