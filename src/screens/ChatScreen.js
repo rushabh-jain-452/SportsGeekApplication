@@ -5,13 +5,14 @@ import { IconButton } from 'react-native-paper';
 import axios from 'axios';
 
 import showSweetAlert from '../helpers/showSweetAlert';
-import { baseurl, errorMessage, chatDays } from '../config';
+import { errorMessage, chatDays } from '../config';
 import { convertUTCDateToLocalDate } from '../helpers/dateFunctions';
 
 import { AuthContext } from '../../App';
 
 const ChatScreen = () => {
   const { loginState, logout, dispatch } = useContext(AuthContext);
+  let baseurl = loginState.backendUrl;
   const userId = parseInt(loginState.userId);
   const messages = loginState.chatMessages;
 

@@ -24,13 +24,14 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import showSweetAlert from '../../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../../config';
+import { errorMessage } from '../../config';
 import axios from 'axios';
 // import { log } from 'react-native-reanimated';
 import { AuthContext } from '../../../App';
 
 const UpdateActiveTournamentScreen = ({ navigation }) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 
 	const headers = { 'Authorization': 'Bearer ' + loginState.token };
 

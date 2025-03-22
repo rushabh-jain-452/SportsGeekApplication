@@ -24,11 +24,12 @@ import axios from 'axios';
 
 import { formatDate } from '../../helpers/dateFunctions';
 import showSweetAlert from '../../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../../config';
+import { errorMessage } from '../../config';
 import { AuthContext } from '../../../App';
 
 const RechargeScreen = ({ navigation }) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 	const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
 	// LogBox.ignoreLogs(['Animated: `useNativeDriver`']);

@@ -25,11 +25,12 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { useNavigation } from '@react-navigation/native';
 
 import showSweetAlert from '../../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../../config';
+import { errorMessage } from '../../config';
 import { AuthContext } from '../../../App';
 
 const PlayerScreen = (props) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 
 	const headers = { 'Authorization': 'Bearer ' + loginState.token };
 

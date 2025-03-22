@@ -25,12 +25,13 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from 'react-native-paper';
 
 import showSweetAlert from '../../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../../config';
+import { errorMessage } from '../../config';
 import axios from 'axios';
 import { AuthContext } from '../../../App';
 
 const UpdateMatchResultScreen = (props) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 
 	const headers = { 'Authorization': 'Bearer ' + loginState.token };
 

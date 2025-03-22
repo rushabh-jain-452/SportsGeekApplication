@@ -9,13 +9,14 @@ import axios from 'axios';
 import * as Colors from '../config/Colors';
 import { formatDate, getNumberFromDate } from '../helpers/dateFunctions';
 import showSweetAlert from '../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../config';
+import { errorMessage } from '../config';
 import { AuthContext } from '../../App';
 
 const Tab = createMaterialTopTabNavigator();
 
 const UpcomingMatches = ({ navigation }) => {
   const { loginState, logout } = useContext(AuthContext);
+  let baseurl = loginState.backendUrl;
   const userId = loginState.userId;
 
   const headers = { 'Authorization': 'Bearer ' + loginState.token };

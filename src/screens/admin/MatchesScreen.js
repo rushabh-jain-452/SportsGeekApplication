@@ -24,11 +24,12 @@ import { useNavigation } from '@react-navigation/native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import showSweetAlert from '../../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../../config';
+import { errorMessage } from '../../config';
 import { AuthContext } from '../../../App';
 
 const MatchesScreen = (props) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 
 	const headers = { 'Authorization': 'Bearer ' + loginState.token };
 

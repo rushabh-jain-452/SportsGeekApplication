@@ -13,12 +13,13 @@ import { formatDate, getNumberFromDate } from '../helpers/dateFunctions';
 import getColor from '../helpers/getColor';
 import showSweetAlert from '../helpers/showSweetAlert';
 import * as Colors from '../config/Colors';
-import { baseurl, errorMessage } from '../config';
+import { errorMessage } from '../config';
 
 import { AuthContext } from '../../App';
 
 const ResultWithUsersScreen = (props) => {
   const { loginState, logout } = useContext(AuthContext);
+  let baseurl = loginState.backendUrl;
   const username = loginState.username;
 
   const headers = { 'Authorization': 'Bearer ' + loginState.token };

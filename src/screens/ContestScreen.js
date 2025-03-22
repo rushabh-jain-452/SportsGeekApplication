@@ -19,7 +19,7 @@ import * as Animatable from 'react-native-animatable';
 // import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Card, colors } from 'react-native-elements';
-import Feather from 'react-native-vector-icons/Feather';
+// import Feather from 'react-native-vector-icons/Feather';
 import { Avatar } from "react-native-elements";
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
@@ -31,10 +31,11 @@ import { AuthContext } from '../../App';
 import getColor from '../helpers/getColor';
 import { formatDate } from '../helpers/dateFunctions';
 import showSweetAlert from '../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../config';
+import { errorMessage } from '../config';
 
 const ContestScreen = (props) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 	const userId = loginState.userId;
 	const username = loginState.username;
 

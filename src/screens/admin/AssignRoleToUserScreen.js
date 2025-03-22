@@ -20,13 +20,14 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { baseurl, errorMessage } from '../../config';
+import { errorMessage } from '../../config';
 import showSweetAlert from '../../helpers/showSweetAlert';
 import axios from 'axios';
 import { AuthContext } from '../../../App';
 
 const AssignRoleToUserScreen = ({ navigation }) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 
 	const headers = { 'Authorization': 'Bearer ' + loginState.token };
 

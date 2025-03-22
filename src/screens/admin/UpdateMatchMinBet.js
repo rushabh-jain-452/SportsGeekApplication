@@ -22,7 +22,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from 'react-native-paper';
 import showSweetAlert from '../../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../../config';
+import { errorMessage } from '../../config';
 
 // import { log } from 'react-native-reanimated';
 // import { FlatList, ScrollView } from 'react-native-gesture-handler';
@@ -33,6 +33,7 @@ import { AuthContext } from '../../../App';
 
 const UpdateMatchMinBet = (props) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 
 	const headers = { 'Authorization': 'Bearer ' + loginState.token };
 

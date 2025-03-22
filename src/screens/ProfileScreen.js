@@ -13,12 +13,13 @@ import axios from 'axios';
 // import ChangePasswordScreen from './ChangePasswordScreen';
 import showSweetAlert from '../helpers/showSweetAlert';
 import getColor from '../helpers/getColor';
-import { baseurl, errorMessage } from '../config';
+import { errorMessage } from '../config';
 import * as Colors from '../config/Colors';
 import { AuthContext } from '../../App';
 
 const ProfileScreen = ({ navigation }) => {
   const { loginState, logout } = useContext(AuthContext);
+  let baseurl = loginState.backendUrl;
   const userId = parseInt(loginState.userId);
 
   const headers = { 'Authorization': 'Bearer ' + loginState.token };

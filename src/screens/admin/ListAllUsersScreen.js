@@ -20,13 +20,14 @@ import Feather from 'react-native-vector-icons/Feather';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import showSweetAlert from '../../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../../config';
+import { errorMessage } from '../../config';
 import { Card } from 'react-native-elements';
 import axios from 'axios';
 import { AuthContext } from '../../../App';
 
 const ListAllUsersScreen = ({ navigation }) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 
 	const headers = { 'Authorization': 'Bearer ' + loginState.token };
 

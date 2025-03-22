@@ -17,7 +17,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 
 import { useTheme } from 'react-native-paper';
-import { baseurl, errorMessage } from '../config';
+import { errorMessage } from '../config';
 import showSweetAlert from '../helpers/showSweetAlert';
 import Spinner from 'react-native-loading-spinner-overlay';
 import axios from 'axios';
@@ -27,6 +27,7 @@ import { AuthContext } from '../../App';
 
 const SignInScreen = ({ navigation }) => {
 	const { login } = React.useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 
 	const [data, setData] = React.useState({
 		username: '',

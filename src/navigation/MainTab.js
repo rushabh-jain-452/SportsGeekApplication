@@ -8,7 +8,7 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import axios from 'axios';
 
 import showSweetAlert from '../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../config';
+import { errorMessage } from '../config';
 import getColor from '../helpers/getColor';
 import { convertUTCDateToLocalDate } from '../helpers/dateFunctions';
 
@@ -35,8 +35,9 @@ const MyMatchesStack = createStackNavigator();
 
 const MainTab = () => {
   const { loginState, logout } = useContext(AuthContext);
+  let baseurl = loginState.backendUrl;
   const role = loginState.role;
-
+  
   const [badge, setBadge] = useState(0);
 
   const changeBadge = (badge) => {

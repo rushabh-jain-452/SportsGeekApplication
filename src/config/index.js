@@ -6,7 +6,7 @@
 // export const baseurl = 'https://sportsgeekapi.herokuapp.com';
 
 // New API on AWS
-export const baseurl = 'http://65.1.72.237:8080';
+// export const baseurl = 'http://65.1.72.237:8080';
 
 // export default baseurl;
 

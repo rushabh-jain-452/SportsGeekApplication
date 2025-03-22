@@ -28,13 +28,14 @@ import axios from 'axios';
 
 import showSweetAlert from '../../helpers/showSweetAlert';
 import { formatDate } from '../../helpers/dateFunctions';
-import { baseurl, errorMessage } from '../../config';
+import { errorMessage } from '../../config';
 import { AuthContext } from '../../../App';
 
 // https://github.com/jemise111/react-native-swipe-list-view/blob/master/SwipeListExample/examples/swipe_value_based_ui.js
 
 const RemovePublicChatScreen = ({ navigation }) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 
 	const headers = { 'Authorization': 'Bearer ' + loginState.token };
 

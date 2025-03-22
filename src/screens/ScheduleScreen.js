@@ -7,12 +7,13 @@ import axios from 'axios';
 
 import { formatDate, calDateDiffDays, getNumberFromDate } from '../helpers/dateFunctions';
 import showSweetAlert from '../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../config';
+import { errorMessage } from '../config';
 import * as Colors from '../config/Colors';
 import { AuthContext } from '../../App';
 
 const ScheduleScreen = ({ navigation }) => {
   const { loginState, logout } = useContext(AuthContext);
+  let baseurl = loginState.backendUrl;
 
   const headers = { 'Authorization': 'Bearer ' + loginState.token };
 

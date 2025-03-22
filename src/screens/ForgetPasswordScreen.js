@@ -21,11 +21,12 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AuthContext } from '../../App';
 
 import showSweetAlert from '../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../config';
+import { errorMessage } from '../config';
 
 const ForgetPasswordScreen = () => {
     const { loginState } = React.useContext(AuthContext);
-    const token = loginState.token;
+    let baseurl = loginState.backendUrl;
+    // const token = loginState.token;
 
     const navigation = useNavigation();
     const [email, setEmail] = useState('');

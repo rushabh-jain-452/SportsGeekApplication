@@ -18,11 +18,12 @@ import axios from 'axios';
 
 import showSweetAlert from '../helpers/showSweetAlert';
 import getColor from '../helpers/getColor';
-import { baseurl, errorMessage } from '../config';
+import { errorMessage } from '../config';
 import { AuthContext } from '../../App';
 
 const UpdateProfilePictureScreen = ({ navigation }) => {
   const { loginState, logout } = useContext(AuthContext);
+  let baseurl = loginState.backendUrl;
   const userId = loginState.userId;
 
   const headers = { 'Authorization': 'Bearer ' + loginState.token };

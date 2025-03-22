@@ -32,7 +32,7 @@ import HomeStack from './src/navigation/HomeStack';
 
 //  const Drawer = createDrawerNavigator();
 import showSweetAlert from './src/helpers/showSweetAlert';
-import { baseurl, errorMessage } from './src/config';
+// import { baseurl, errorMessage } from './src/config';
 export const AuthContext = React.createContext();
 
 const App: () => Node = () => {

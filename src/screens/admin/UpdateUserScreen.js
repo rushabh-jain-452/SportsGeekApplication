@@ -16,7 +16,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 // import ImagePicker from 'react-native-image-crop-picker';
 import showSweetAlert from '../../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../../config';
+import { errorMessage } from '../../config';
 import Spinner from 'react-native-loading-spinner-overlay';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -25,6 +25,7 @@ import { AuthContext } from '../../../App';
 
 const UpdateUserScreen = (props) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 
 	const headers = { 'Authorization': 'Bearer ' + loginState.token };
 

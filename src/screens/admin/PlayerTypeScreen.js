@@ -21,11 +21,12 @@ import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import showSweetAlert from '../../helpers/showSweetAlert';
-import { baseurl, errorMessage } from '../../config';
+import { errorMessage } from '../../config';
 import { AuthContext } from '../../../App';
 
 const PlayerTypeScreen = ({ navigation }) => {
 	const { loginState, logout } = useContext(AuthContext);
+	let baseurl = loginState.backendUrl;
 
 	const headers = { 'Authorization': 'Bearer ' + loginState.token };
 
