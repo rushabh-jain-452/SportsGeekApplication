@@ -105,6 +105,7 @@ const UpcomingMatches = ({ navigation }) => {
 
 const LiveMatches = ({ navigation }) => {
   const { loginState } = React.useContext(AuthContext);
+  let baseurl = loginState.backendUrl;
   const userId = loginState.userId;
 
   const headers = { 'Authorization': 'Bearer ' + loginState.token };
@@ -195,6 +196,7 @@ const LiveMatches = ({ navigation }) => {
 
 const Results = ({ navigation }) => {
   const { loginState } = React.useContext(AuthContext);
+  let baseurl = loginState.backendUrl;
   const userId = loginState.userId;
 
   const headers = { 'Authorization': 'Bearer ' + loginState.token };

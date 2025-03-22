@@ -35,7 +35,6 @@ const MyMatchesStack = createStackNavigator();
 
 const MainTab = () => {
   const { loginState, logout } = useContext(AuthContext);
-  let baseurl = loginState.backendUrl;
   const role = loginState.role;
   
   const [badge, setBadge] = useState(0);
@@ -215,6 +214,7 @@ const FantasyStackScreen = ({ navigation }) => (
 const ChatStackScreen = ({ navigation }) => {
 
   const { loginState, dispatch } = React.useContext(AuthContext);
+  let baseurl = loginState.backendUrl;
 
   const refreshChatMessages = () => {
     ToastAndroid.show('Fetching new messages...', ToastAndroid.SHORT);
@@ -388,6 +388,7 @@ const MyMatchesStackScreen = ({ navigation }) => (
 
 const UserAvatar = (props) => {
   const { loginState } = React.useContext(AuthContext);
+  let baseurl = loginState.backendUrl;
   const token = loginState.token;
   const userId = loginState.userId;
 

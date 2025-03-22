@@ -26,7 +26,7 @@ import { AuthContext } from '../../App';
 // import { ScrollView } from 'react-native-gesture-handler';
 
 const SignInScreen = ({ navigation }) => {
-	const { login } = React.useContext(AuthContext);
+	const { login, loginState } = React.useContext(AuthContext);
 	let baseurl = loginState.backendUrl;
 
 	const [data, setData] = React.useState({
