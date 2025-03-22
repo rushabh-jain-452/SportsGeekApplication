@@ -71,7 +71,7 @@ const ForgetPasswordScreen = () => {
                         setUserId(response.data.userId);
                         setEmail('');
                         setMobileNumber('');
-                        showSweetAlert('success', 'Success', 'OTP sent successfully. Please check your email...!');
+                        showSweetAlert('success', 'Success', 'OTP sent successfully. Please check your email. Check Junk/Spam folder if not found in Inbox.');
                     } else {
                         showSweetAlert('error', 'Network Error', errorMessage);
                     }

@@ -2,7 +2,7 @@ export default data = [
   {
     title: "IPL TagLine",
     body: "The greater the setback... The stronger the comeback.The IPL has taken the game to virtually every house in the world.",
-    imgUrl: "https://firebasestorage.googleapis.com/v0/b/sportsgeek-74e1e.appspot.com/o/ff02b99e-a153-42d7-aaf4-9863cab0aeca.png?alt=media&token=e9924ea4-c2d9-4782-bc2d-0fe734431c86",
+    imgUrl: "https://firebasestorage.googleapis.com/v0/b/sportsgeek-74e1e.appspot.com/o/2e318d51-53bd-4139-b4dd-827e24a4b155.webp?alt=media&token=e9924ea4-c2d9-4782-bc2d-0fe734431c86",
     clickme: "View Schedule"
   },
   {
